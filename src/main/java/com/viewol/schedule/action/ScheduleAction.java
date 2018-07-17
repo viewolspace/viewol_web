@@ -1,6 +1,9 @@
 package com.viewol.schedule.action;
 
+import com.viewol.common.Response;
+import com.viewol.pojo.Schedule;
 import com.viewol.pojo.ScheduleVO;
+import com.viewol.schedule.vo.RecommendScheduleResponse;
 import com.viewol.service.IScheduleService;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
+import java.util.List;
 
 @SwaggerDefinition(
         tags = {
@@ -32,13 +36,16 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询首页主办方活动列表", notes = "查询主办方的活动列表，首页跑马灯使用", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
+            @ApiResponse(code = "0013", message = "系统异常", response = Response.class)
     })
     public String queryNowHostSchedule() {
-
-        scheduleService.queryNowHostSchedule();
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        List<Schedule> scheduleList = scheduleService.queryNowHostSchedule();
+        RecommendScheduleResponse rs = new RecommendScheduleResponse();
+        rs.setStatus("0000");
+        rs.setMessage("查询成功");
+        rs.setResult(scheduleList);
+        return rs.toJSONString();
     }
 
     /**
