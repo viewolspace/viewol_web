@@ -2,6 +2,7 @@ package com.viewol.company.action;
 
 import com.viewol.service.ICompanyService;
 import com.youguu.core.util.json.YouguuJsonHelper;
+import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -10,6 +11,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+@SwaggerDefinition(
+        info = @Info(description ="展商",
+                version = "v1.0.0",
+                title = "展商API",
+                contact= @Contact(name="test",email="test@163.com")
+        ),
+        tags = {
+                @Tag(name="v1.0",description="展商")
+        }
+)
+@Api(value = "ddddddddddddd")
 @Path(value = "/company")
 @Controller("companyAtion")
 public class CompanyAtion {
@@ -24,6 +36,11 @@ public class CompanyAtion {
     @GET
     @Path(value = "/recommentCompanyList")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "推荐展商列表", notes = "首页推荐", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String recommentCompanyList() {
         companyService.queryRecommentCompany();
 
