@@ -1,9 +1,9 @@
-package com.viewol.schedule.action;
+package com.viewol.web.schedule.action;
 
-import com.viewol.common.Response;
+import com.viewol.web.common.Response;
 import com.viewol.pojo.Schedule;
 import com.viewol.pojo.ScheduleVO;
-import com.viewol.schedule.vo.RecommendScheduleResponse;
+import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.service.IScheduleService;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;

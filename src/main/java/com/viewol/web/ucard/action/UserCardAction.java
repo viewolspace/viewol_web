@@ -1,4 +1,4 @@
-package com.viewol.ucard.action;
+package com.viewol.web.ucard.action;
 
 import com.viewol.pojo.query.UserCardQuery;
 import com.viewol.service.IUserCardService;

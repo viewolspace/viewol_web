@@ -1,4 +1,4 @@
-package com.viewol.product.action;
+package com.viewol.web.product.action;
 
 import com.viewol.service.IProductService;
 import com.youguu.core.util.json.YouguuJsonHelper;

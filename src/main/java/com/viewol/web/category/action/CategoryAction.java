@@ -1,4 +1,4 @@
-package com.viewol.category.action;
+package com.viewol.web.category.action;
 
 import com.viewol.service.ICategoryService;
 import com.youguu.core.util.json.YouguuJsonHelper;

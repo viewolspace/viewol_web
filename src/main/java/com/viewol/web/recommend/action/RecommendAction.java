@@ -1,4 +1,4 @@
-package com.viewol.recommend.action;
+package com.viewol.web.recommend.action;
 
 import com.viewol.pojo.Recommend;
 import com.viewol.service.IRecommendService;

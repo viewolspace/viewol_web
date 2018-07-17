@@ -1,4 +1,4 @@
-package com.viewol.swagger;
+package com.viewol.web.swagger;
 
 import com.youguu.core.util.PropertiesUtil;
 import io.swagger.jaxrs.config.BeanConfig;
@@ -23,7 +23,7 @@ public class RestApplication extends Application {
             return;
         }
         String version = properties.getProperty("version", "v1.0.0");
-        String resourcePackage = properties.getProperty("resource.package", "com.viewol");
+        String resourcePackage = properties.getProperty("resource.package", "com.viewol.web");
         String scan = properties.getProperty("scan", "true");
         String basePath = properties.getProperty("base.path");
         String host = properties.getProperty("host");

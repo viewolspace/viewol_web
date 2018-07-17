@@ -1,4 +1,4 @@
-package com.viewol.common;
+package com.viewol.web.common;
 
 public interface IResponse {
 

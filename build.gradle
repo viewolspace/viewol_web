@@ -61,7 +61,7 @@ dependencies {
     /**Swagger */
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.2.1'
     compile group: 'com.google.guava', name: 'guava', version: '20.0'
-    compile 'org.reflections:reflections:0.9.11'
+    compile 'org.reflections:reflections:0.9.10'
 
     /** Db **/
     compile 'org.mybatis:mybatis:3.2.3'

@@ -1,7 +1,7 @@
-package com.viewol.schedule.vo;
+package com.viewol.web.schedule.vo;
 
 import com.alibaba.fastjson.JSON;
-import com.viewol.common.Response;
+import com.viewol.web.common.Response;
 import com.viewol.pojo.Schedule;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

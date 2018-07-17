@@ -1,4 +1,4 @@
-package com.viewol.fuser.action;
+package com.viewol.web.fuser.action;
 
 import com.viewol.pojo.FUser;
 import com.viewol.service.*;

@@ -1,4 +1,4 @@
-package com.viewol.common;
+package com.viewol.web.common;
 
 import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.ApiModel;

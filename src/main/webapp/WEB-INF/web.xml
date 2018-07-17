@@ -11,7 +11,7 @@
 
     <context-param>
         <param-name>javax.ws.rs.core.Application</param-name>
-        <param-value>com.viewol.swagger.RestApplication</param-value>
+        <param-value>com.viewol.web.swagger.RestApplication</param-value>
     </context-param>
 
     <filter>
