@@ -65,6 +65,6 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>swagger-ui-zh/index.html</welcome-file>
+        <welcome-file>/swagger-ui-zh/index.html</welcome-file>
     </welcome-file-list>
 </web-app>

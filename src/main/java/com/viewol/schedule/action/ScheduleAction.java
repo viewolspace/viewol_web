@@ -1,12 +1,20 @@
 package com.viewol.schedule.action;
 
+import com.viewol.pojo.ScheduleVO;
 import com.viewol.service.IScheduleService;
 import com.youguu.core.util.json.YouguuJsonHelper;
+import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
 
+@SwaggerDefinition(
+        tags = {
+                @Tag(name="v1.0",description="日程")
+        }
+)
+@Api(value = "ScheduleAction")
 @Path(value = "schedule")
 @Controller("scheduleAction")
 public class ScheduleAction {
@@ -22,6 +30,11 @@ public class ScheduleAction {
     @GET
     @Path(value = "/queryNowHostSchedule")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询首页主办方活动列表", notes = "查询主办方的活动列表，首页跑马灯使用", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String queryNowHostSchedule() {
 
         scheduleService.queryNowHostSchedule();
@@ -37,6 +50,11 @@ public class ScheduleAction {
     @GET
     @Path(value = "/queryNowRecommendSchedule")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询首页展商活动列表", notes = "版面只显示3条活动，第一条为置顶活动，第二、三条为跑马灯。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String queryNowRecommendSchedule(@QueryParam("type") int type) {
 
         scheduleService.queryNowRecommendSchedule(type);
@@ -57,6 +75,11 @@ public class ScheduleAction {
     @GET
     @Path(value = "/listSchedule")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询日程活动列表", notes = "查询日程列表，支持搜索(搜索条件：时间、发布人类型，关键词)，上拉可以加载更多。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String listSchedule(@QueryParam("time") String time,
                                @QueryParam("date") String date,
                                @QueryParam("type") int type,
@@ -76,9 +99,15 @@ public class ScheduleAction {
     @GET
     @Path(value = "/getSchedule")
     @Produces("text/html;charset=UTF-8")
-    public String getSchedule(@QueryParam("id") int id) {
+    @ApiOperation(value = "查询活动详情", notes = "点击活动列表中某个活动，进入活动详情页面。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
 
-        scheduleService.getSchedule(id);
+    })
+    public String getSchedule(@QueryParam("id") int id,
+                              @QueryParam("userId") int userId) {
+
+        ScheduleVO scheduleVO = scheduleService.getScheduleByUid(id, userId);
         return YouguuJsonHelper.returnJSON("0000", "ok");
     }
 
@@ -93,6 +122,11 @@ public class ScheduleAction {
     @POST
     @Path(value = "/applyJoin")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "报名参加活动", notes = "客户通过活动详情页面下方的\"报名参加\"按钮，点击报名，可以选择是否开启定时提醒。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String applyJoin(@FormParam("userId") int userId,
                             @FormParam("scheduleId") int scheduleId,
                             @FormParam("needReminder") boolean needReminder) {
@@ -114,6 +148,11 @@ public class ScheduleAction {
     @POST
     @Path(value = "/applySchedule")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "展商创建活动接口", notes = "展商通过H5页面，可以申请创建活动，活动默认未审核。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String applySchedule(@FormParam("companyId") int companyId,
                                 @FormParam("title") String title,
                                 @FormParam("place") String place,

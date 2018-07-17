@@ -12,16 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 @SwaggerDefinition(
-        info = @Info(description ="展商",
-                version = "v1.0.0",
-                title = "展商API",
-                contact= @Contact(name="test",email="test@163.com")
-        ),
         tags = {
                 @Tag(name="v1.0",description="展商")
         }
 )
-@Api(value = "ddddddddddddd")
+@Api(value = "CompanyAtion")
 @Path(value = "/company")
 @Controller("companyAtion")
 public class CompanyAtion {
@@ -36,7 +31,7 @@ public class CompanyAtion {
     @GET
     @Path(value = "/recommentCompanyList")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "推荐展商列表", notes = "首页推荐", author = "更新于 2018-07-16")
+    @ApiOperation(value = "查询首页推荐展商列表", notes = "首页展商推荐一排3个，显示两排，然后自动横向滚动，一共12个。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功"),
 
@@ -58,6 +53,11 @@ public class CompanyAtion {
     @GET
     @Path(value = "/listCompany")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "展商TAB页查询接口", notes = "查询展商列表，支持按关键词、类别搜索，上拉可以加载更多。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String listCompany(@QueryParam("keyWord") String keyWord,
                               @QueryParam("categoryId") String categoryId,
                               @QueryParam("lastSeq") long lastSeq,
@@ -75,6 +75,11 @@ public class CompanyAtion {
     @GET
     @Path(value = "/getCompany")
     @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询展商基本信息", notes = "展商主页包含两个Tab页，第一Tab显示展商基本信息。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
     public String getCompany(@QueryParam("id") int id) {
         companyService.getCompany(id);
 
