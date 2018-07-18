@@ -199,7 +199,12 @@ public class FuserAction {
             fUser.setEmail(email);
             fUser.setAge(age);
 
-            int result = fUserService.addFUser(fUser, openId, uuid, type);
+            StringBuffer answer = new StringBuffer();
+            answer.append(questionOne).append(";");
+            answer.append(questionTwo).append(";");
+            answer.append(questionThree).append(";");
+
+            int result = fUserService.addFUser(fUser, answer.toString(), openId, uuid, type);
             if(result>0){
                 rs.setStatus("0000");
                 rs.setMessage("保存成功");
