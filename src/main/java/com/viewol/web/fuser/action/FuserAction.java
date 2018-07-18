@@ -66,6 +66,15 @@ public class FuserAction {
             }
 
             FUserResponse.FUserVO vo = rs.new FUserVO();
+            vo.setUserId(fUser.getUserId());
+            vo.setUserName(fUser.getUserName());
+            vo.setPhone(fUser.getPhone());
+            vo.setCompany(fUser.getCompany());
+            vo.setPosition(fUser.getPosition());
+            vo.setEmail(fUser.getEmail());
+            vo.setAge(fUser.getAge());
+            vo.setCreateTime(fUser.getcTime());
+            vo.setCompanyId(fUser.getCompanyId());
 
             rs.setStatus("0000");
             rs.setMessage("查询成功");
@@ -117,6 +126,14 @@ public class FuserAction {
                 rs.setMessage("用户不存在");
                 return rs.toJSONString();
             }
+
+            fUser.setPhone(phone);
+            fUser.setCompany(company);
+            fUser.setCompanyId(companyId);
+            fUser.setPosition(position);
+            fUser.setEmail(email);
+            fUser.setAge(age);
+
             int result = fUserService.updateUser(fUser);
             if(result>0){
                 rs.setStatus("0000");
@@ -174,6 +191,13 @@ public class FuserAction {
         try {
             Response rs = new Response();
             FUser fUser = new FUser();
+
+            fUser.setPhone(phone);
+            fUser.setCompany(company);
+            fUser.setCompanyId(companyId);
+            fUser.setPosition(position);
+            fUser.setEmail(email);
+            fUser.setAge(age);
 
             int result = fUserService.addFUser(fUser, openId, uuid, type);
             if(result>0){
@@ -307,7 +331,13 @@ public class FuserAction {
             List<UserCollectionResponse.UserCollectionVO> voList = new ArrayList<>();
             for(UserCollection collection : list){
                 UserCollectionResponse.UserCollectionVO vo = rs.new UserCollectionVO();
-
+                vo.setId(collection.getId());
+                vo.setUserId(collection.getUserId());
+                vo.setType(collection.getType());
+                vo.setThirdId(collection.getThirdId());
+                vo.setName(collection.getName());
+                vo.setCreateTime(collection.getcTime());
+                vo.setImageView(collection.getImageView());
                 voList.add(vo);
             }
 
@@ -353,7 +383,15 @@ public class FuserAction {
             List<UserBrowseResponse.UserBrowseVO> voList = new ArrayList<>();
             for(UserBrowse browse : list){
                 UserBrowseResponse.UserBrowseVO vo = rs.new UserBrowseVO();
-
+                vo.setId(browse.getId());
+                vo.setUserId(browse.getUserId());
+                vo.setType(browse.getType());
+                vo.setThirdId(browse.getThirdId());
+                vo.setName(browse.getName());
+                vo.setNum(browse.getNum());
+                vo.setCreateTime(browse.getcTime());
+                vo.setModifyTime(browse.getmTime());
+                vo.setImageView(browse.getImageView());
                 voList.add(vo);
             }
 
@@ -398,7 +436,13 @@ public class FuserAction {
             List<UserDownloadResponse.UserDownloadVO> voList = new ArrayList<>();
             for(UserDownload download : list){
                 UserDownloadResponse.UserDownloadVO vo = rs.new UserDownloadVO();
-
+                vo.setId(download.getId());
+                vo.setUserId(download.getUserId());
+                vo.setProductId(download.getProductId());
+                vo.setProductName(download.getProductName());
+                vo.setPdfUrl(download.getPdfUrl());
+                vo.setCreateTime(download.getcTime());
+                vo.setImageView(download.getImageView());
                 voList.add(vo);
             }
 

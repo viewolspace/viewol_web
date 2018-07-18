@@ -212,7 +212,22 @@ public class ScheduleAction {
             }
 
             ScheduleResponse.ScheduleDetailVO vo = rs.new ScheduleDetailVO();
-
+            vo.setId(scheduleVO.getId());
+            vo.setCompanyId(scheduleVO.getCompanyId());
+            vo.setCompanyName(scheduleVO.getCompanyName());
+            vo.setTitle(scheduleVO.getTitle());
+            vo.setCreateTime(scheduleVO.getcTime());
+            vo.setType(scheduleVO.getType());
+            vo.setStatus(scheduleVO.getStatus());
+            vo.setStartTime(scheduleVO.getsTime());
+            vo.setEndTime(scheduleVO.geteTime());
+            vo.setPlace(scheduleVO.getPlace());
+            vo.setVtype(scheduleVO.getvType());
+            vo.setSeq(scheduleVO.getSeq());
+            vo.setContentView(scheduleVO.getContentView());
+            vo.setRecommendSTime(scheduleVO.getRecommendSTime());
+            vo.setRecommendETime(scheduleVO.getRecommendETime());
+            vo.setApplyStatus(scheduleVO.getApplyStatus());
 
             rs.setStatus("0000");
             rs.setMessage("查询成功");

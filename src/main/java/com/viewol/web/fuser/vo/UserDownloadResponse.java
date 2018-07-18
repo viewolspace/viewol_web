@@ -103,5 +103,13 @@ public class UserDownloadResponse extends Response {
         public void setImageView(String imageView) {
             this.imageView = imageView;
         }
+
+        public Date getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(Date createTime) {
+            this.createTime = createTime;
+        }
     }
 }

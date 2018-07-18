@@ -62,6 +62,30 @@ public class UserCardAction {
             List<UserCardResponse.UserCardVO> voList = new ArrayList<>();
             for(UserCardVO userCardVO : list){
                 UserCardResponse.UserCardVO vo = rs.new UserCardVO();
+                vo.setId(userCardVO.getId());
+                vo.setbUserId(userCardVO.getbUserId());
+                vo.setCompanyId(userCardVO.getCompanyId());
+                vo.setfUserId(userCardVO.getfUserId());
+                vo.setCreateTime(userCardVO.getcTime());
+
+                //客户基本信息
+                vo.setfUserName(userCardVO.getfUserName());
+                vo.setfPhone(userCardVO.getfPhone());
+                vo.setFCompany(userCardVO.getFCompany());
+                vo.setfPosition(userCardVO.getfPosition());
+                vo.setfEmail(userCardVO.getfEmail());
+                vo.setFAge(userCardVO.getFAge());
+                vo.setFCompanyId(userCardVO.getFCompanyId());
+
+                //展商业务员基本信息
+                vo.setBUserName(userCardVO.getBUserName());
+                vo.setBPhone(userCardVO.getBPhone());
+                vo.setBPosition(userCardVO.getBPosition());
+
+                //展商基本信息
+                vo.setLogo(userCardVO.getLogo());
+                vo.setName(userCardVO.getName());
+                vo.setShortName(userCardVO.getShortName());
 
                 voList.add(vo);
             }
@@ -112,7 +136,30 @@ public class UserCardAction {
             List<UserCardResponse.UserCardVO> voList = new ArrayList<>();
             for(UserCardVO userCardVO : list){
                 UserCardResponse.UserCardVO vo = rs.new UserCardVO();
+                vo.setId(userCardVO.getId());
+                vo.setbUserId(userCardVO.getbUserId());
+                vo.setCompanyId(userCardVO.getCompanyId());
+                vo.setfUserId(userCardVO.getfUserId());
+                vo.setCreateTime(userCardVO.getcTime());
 
+                //客户基本信息
+                vo.setfUserName(userCardVO.getfUserName());
+                vo.setfPhone(userCardVO.getfPhone());
+                vo.setFCompany(userCardVO.getFCompany());
+                vo.setfPosition(userCardVO.getfPosition());
+                vo.setfEmail(userCardVO.getfEmail());
+                vo.setFAge(userCardVO.getFAge());
+                vo.setFCompanyId(userCardVO.getFCompanyId());
+
+                //展商业务员基本信息
+                vo.setBUserName(userCardVO.getBUserName());
+                vo.setBPhone(userCardVO.getBPhone());
+                vo.setBPosition(userCardVO.getBPosition());
+
+                //展商基本信息
+                vo.setLogo(userCardVO.getLogo());
+                vo.setName(userCardVO.getName());
+                vo.setShortName(userCardVO.getShortName());
                 voList.add(vo);
             }
 
