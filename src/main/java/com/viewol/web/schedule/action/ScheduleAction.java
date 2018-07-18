@@ -5,12 +5,14 @@ import com.viewol.pojo.Schedule;
 import com.viewol.pojo.ScheduleVO;
 import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.service.IScheduleService;
+import com.viewol.web.schedule.vo.ScheduleResponse;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @SwaggerDefinition(
@@ -37,15 +39,39 @@ public class ScheduleAction {
     @ApiOperation(value = "查询首页主办方活动列表", notes = "查询主办方的活动列表，首页跑马灯使用", author = "更新于 2018-07-16")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
-            @ApiResponse(code = "0013", message = "系统异常", response = Response.class)
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String queryNowHostSchedule() {
-        List<Schedule> scheduleList = scheduleService.queryNowHostSchedule();
-        RecommendScheduleResponse rs = new RecommendScheduleResponse();
-        rs.setStatus("0000");
-        rs.setMessage("查询成功");
-        rs.setResult(scheduleList);
-        return rs.toJSONString();
+        try{
+            List<Schedule> scheduleList = scheduleService.queryNowHostSchedule();
+            RecommendScheduleResponse rs = new RecommendScheduleResponse();
+
+            if(null == scheduleList || scheduleList.size() == 0){
+                rs.setStatus("0000");
+                rs.setMessage("查询成功");
+                return rs.toJSONString();
+            }
+
+            List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+            for(Schedule schedule : scheduleList){
+                RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
+                vo.setId(schedule.getId());
+                vo.setTitle(schedule.getTitle());
+                vo.setCompanyId(schedule.getCompanyId());
+                vo.setCompanyName(schedule.getCompanyName());
+                vo.setCreateTime(schedule.getcTime());
+                voList.add(vo);
+            }
+
+            rs.setResult(voList);
+            return rs.toJSONString();
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+
     }
 
     /**
@@ -59,13 +85,46 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询首页展商活动列表", notes = "版面只显示3条活动，第一条为置顶活动，第二、三条为跑马灯。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String queryNowRecommendSchedule(@QueryParam("type") int type) {
+    public String queryNowRecommendSchedule(@ApiParam(value = "推荐类型：1-置顶；2-推荐", required = true) @QueryParam("type") int type) {
+        if (type != 1 && type != 2) {
+            Response rs = new Response();
+            rs.setStatus("0002");
+            rs.setMessage("参数错误");
+            return rs.toJSONString();
+        }
 
-        scheduleService.queryNowRecommendSchedule(type);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        try{
+            List<ScheduleVO> scheduleVOList = scheduleService.queryNowRecommendSchedule(type);
+            RecommendScheduleResponse rs = new RecommendScheduleResponse();
+
+            if(null == scheduleVOList || scheduleVOList.size() == 0){
+                rs.setStatus("0000");
+                rs.setMessage("查询成功");
+                return rs.toJSONString();
+            }
+
+            List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+            for(ScheduleVO scheduleVO : scheduleVOList){
+                RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
+                vo.setId(scheduleVO.getId());
+                vo.setTitle(scheduleVO.getTitle());
+                vo.setCompanyId(scheduleVO.getCompanyId());
+                vo.setCompanyName(scheduleVO.getCompanyName());
+                vo.setCreateTime(scheduleVO.getcTime());
+                voList.add(vo);
+            }
+
+            rs.setResult(voList);
+            return rs.toJSONString();
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
     }
 
 
@@ -84,17 +143,45 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询日程活动列表", notes = "查询日程列表，支持搜索(搜索条件：时间、发布人类型，关键词)，上拉可以加载更多。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String listSchedule(@QueryParam("time") String time,
-                               @QueryParam("date") String date,
-                               @QueryParam("type") int type,
-                               @QueryParam("keyword") String keyword,
-                               @QueryParam("num") int num) {
+    public String listSchedule(@ApiParam(value = "格式 yyyy-MM-dd HH:mm:ss") @QueryParam("time") String time,
+                               @ApiParam(value = "格式 yyyy-MM-dd") @QueryParam("date") String date,
+                               @ApiParam(value = "发布人类型，0-主办方；1-展商") @QueryParam("type") int type,
+                               @ApiParam(value = "关键词（可匹配主题和展商名称）") @QueryParam("keyword") String keyword,
+                               @ApiParam(value = "每次返回多少条记录", required = true) @QueryParam("num") int num) {
 
-        scheduleService.listSchedule(time, date, type, keyword, num);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, num);
+
+        try{
+            RecommendScheduleResponse rs = new RecommendScheduleResponse();
+
+            if(null == scheduleList || scheduleList.size() == 0){
+                rs.setStatus("0000");
+                rs.setMessage("查询成功");
+                return rs.toJSONString();
+            }
+
+            List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+            for(Schedule schedule : scheduleList){
+                RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
+                vo.setId(schedule.getId());
+                vo.setTitle(schedule.getTitle());
+                vo.setCompanyId(schedule.getCompanyId());
+                vo.setCompanyName(schedule.getCompanyName());
+                vo.setCreateTime(schedule.getcTime());
+                voList.add(vo);
+            }
+
+            rs.setResult(voList);
+            return rs.toJSONString();
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
     }
 
     /**
@@ -108,14 +195,37 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询活动详情", notes = "点击活动列表中某个活动，进入活动详情页面。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = ScheduleResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String getSchedule(@QueryParam("id") int id,
-                              @QueryParam("userId") int userId) {
+    public String getSchedule(@ApiParam(value = "活动ID", required = true) @QueryParam("id") int id,
+                              @ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId) {
 
-        ScheduleVO scheduleVO = scheduleService.getScheduleByUid(id, userId);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        try {
+            ScheduleVO scheduleVO = scheduleService.getScheduleByUid(id, userId);
+
+            ScheduleResponse rs = new ScheduleResponse();
+            if(null == scheduleVO){
+                rs.setStatus("0000");
+                rs.setMessage("活动不存在");
+                return rs.toJSONString();
+            }
+
+            ScheduleResponse.ScheduleDetailVO vo = rs.new ScheduleDetailVO();
+
+
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
+            rs.setResult(vo);
+
+            return rs.toJSONString();
+
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
     }
 
     /**
@@ -131,15 +241,31 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "报名参加活动", notes = "客户通过活动详情页面下方的\"报名参加\"按钮，点击报名，可以选择是否开启定时提醒。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "报名成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "报名失败", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String applyJoin(@FormParam("userId") int userId,
-                            @FormParam("scheduleId") int scheduleId,
-                            @FormParam("needReminder") boolean needReminder) {
+    public String applyJoin(@ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+                            @ApiParam(value = "活动ID", required = true) @FormParam("scheduleId") int scheduleId,
+                            @ApiParam(value = "是否需要提醒", required = true) @FormParam("needReminder") boolean needReminder) {
 
-        scheduleService.applyJoin(userId, scheduleId, needReminder);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        Response rs = new Response();
+
+        try{
+            int result = scheduleService.applyJoin(userId, scheduleId, needReminder);
+            if(result>0){
+                rs.setStatus("0000");
+                rs.setMessage("报名成功");
+            }else {
+                rs.setStatus("0002");
+                rs.setMessage("报名失败");
+            }
+        } catch (Exception e) {
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+
+        }
+        return rs.toJSONString();
     }
 
     /**
@@ -157,18 +283,35 @@ public class ScheduleAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "展商创建活动接口", notes = "展商通过H5页面，可以申请创建活动，活动默认未审核。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "申请成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "申请失败", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String applySchedule(@FormParam("companyId") int companyId,
-                                @FormParam("title") String title,
-                                @FormParam("place") String place,
-                                @FormParam("content") String content,
-                                @FormParam("startTime") String startTime,
-                                @FormParam("endTime") String endTime) {
+    public String applySchedule(@ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                                @ApiParam(value = "活动标题", required = true) @FormParam("title") String title,
+                                @ApiParam(value = "活动位置", required = true) @FormParam("place") String place,
+                                @ApiParam(value = "活动详情", required = true) @FormParam("content") String content,
+                                @ApiParam(value = "活动开始时间，格式 yyyy-MM-dd HH:mm:ss", required = true) @FormParam("startTime") String startTime,
+                                @ApiParam(value = "活动结束时间，格式 yyyy-MM-dd HH:mm:ss", required = true)  @FormParam("endTime") String endTime) {
 
-        scheduleService.applySchedule(companyId, title, place, content, startTime, endTime);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        Response rs = new Response();
+
+        try{
+            int result = scheduleService.applySchedule(companyId, title, place, content, startTime, endTime);
+            if(result>0){
+                rs.setStatus("0000");
+                rs.setMessage("申请成功");
+            }else {
+                rs.setStatus("0002");
+                rs.setMessage("申请失败");
+            }
+        } catch (Exception e) {
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+
+        }
+        return rs.toJSONString();
+
     }
 
 }

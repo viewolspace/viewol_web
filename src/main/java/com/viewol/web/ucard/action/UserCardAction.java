@@ -1,7 +1,10 @@
 package com.viewol.web.ucard.action;
 
+import com.viewol.pojo.UserCardVO;
 import com.viewol.pojo.query.UserCardQuery;
 import com.viewol.service.IUserCardService;
+import com.viewol.web.common.Response;
+import com.viewol.web.ucard.vo.UserCardResponse;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import java.util.ArrayList;
+import java.util.List;
 
 @SwaggerDefinition(
         tags = {
@@ -34,18 +39,44 @@ public class UserCardAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询展商名片夹列表（H5）", notes = "展商管理员登录H5页面，查询自己的名片夹列表。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = UserCardResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String ucardList(@QueryParam("companyId") int companyId,
-                            @QueryParam("lastId") int lastId,
-                            @QueryParam("pageSize") int pageSize) {
-        UserCardQuery query = new UserCardQuery();
-        query.setCompanyId(companyId);
-        query.setLastId(lastId);
-        query.setPageSize(pageSize);
-        userCardService.listUserCard(query);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+    public String ucardList(@ApiParam(value = "展商ID", required = true) @QueryParam("companyId") int companyId,
+                            @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId,
+                            @ApiParam(value = "每次返回记录数", required = true) @QueryParam("pageSize") int pageSize) {
+        try {
+            UserCardQuery query = new UserCardQuery();
+            query.setCompanyId(companyId);
+            query.setLastId(lastId);
+            query.setPageSize(pageSize);
+            List<UserCardVO> list = userCardService.listUserCard(query);
+
+            UserCardResponse rs = new UserCardResponse();
+            if(null == list || list.size() == 0){
+                rs.setStatus("0000");
+                rs.setMessage("暂无数据");
+                return rs.toJSONString();
+            }
+
+            List<UserCardResponse.UserCardVO> voList = new ArrayList<>();
+            for(UserCardVO userCardVO : list){
+                UserCardResponse.UserCardVO vo = rs.new UserCardVO();
+
+                voList.add(vo);
+            }
+
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
+            rs.setResult(voList);
+            return rs.toJSONString();
+        } catch (Exception e) {
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+
     }
 
     /**
@@ -57,17 +88,43 @@ public class UserCardAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询我的名片夹列表（小程序）", notes = "客户进入我的-->名片夹，查询自己的名片夹列表。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
-
+            @ApiResponse(code = "0000", message = "请求成功", response = UserCardResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String mycardList(@QueryParam("fUserId") int fUserId,
-                            @QueryParam("lastId") int lastId,
-                            @QueryParam("pageSize") int pageSize) {
-        UserCardQuery query = new UserCardQuery();
-        query.setfUserId(fUserId);
-        query.setLastId(lastId);
-        query.setPageSize(pageSize);
-        userCardService.listUserCard(query);
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+    public String mycardList(@ApiParam(value = "客户ID", required = true) @QueryParam("fUserId") int fUserId,
+                             @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId,
+                             @ApiParam(value = "每次返回记录数", required = true) @QueryParam("pageSize") int pageSize) {
+
+        try {
+            UserCardQuery query = new UserCardQuery();
+            query.setfUserId(fUserId);
+            query.setLastId(lastId);
+            query.setPageSize(pageSize);
+            List<UserCardVO> list = userCardService.listUserCard(query);
+
+            UserCardResponse rs = new UserCardResponse();
+            if(null == list || list.size() == 0){
+                rs.setStatus("0000");
+                rs.setMessage("暂无数据");
+                return rs.toJSONString();
+            }
+
+            List<UserCardResponse.UserCardVO> voList = new ArrayList<>();
+            for(UserCardVO userCardVO : list){
+                UserCardResponse.UserCardVO vo = rs.new UserCardVO();
+
+                voList.add(vo);
+            }
+
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
+            rs.setResult(voList);
+            return rs.toJSONString();
+        } catch (Exception e) {
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
     }
 }
