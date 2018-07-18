@@ -1,6 +1,9 @@
 package com.viewol.web.product.action;
 
+import com.viewol.pojo.Product;
 import com.viewol.service.IProductService;
+import com.viewol.web.product.vo.ProductModuleVO;
+import com.viewol.web.product.vo.ProductRootVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
@@ -10,6 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import java.util.List;
 
 @SwaggerDefinition(
         tags = {
@@ -32,15 +36,17 @@ public class ProductAtion {
     @GET
     @Path(value = "/recommentProductList")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "查询首页推荐产品列表", notes = "首页产品推荐一排3个，显示两排，然后自动横向滚动，一共12个。", author = "更新于 2018-07-16")
+    @ApiOperation(value = "查询首页推荐产品列表", notes = "首页产品推荐一排3个，显示两排，然后自动横向滚动，一共12个。 <br/> 此接口需要使用的属性：id ，imageView ，name", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
+            @ApiResponse(code = "0000", message = "请求成功" ,response = ProductModuleVO.class),
 
     })
     public String recommentProductList() {
-        productService.queryRecommentProduct();
 
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        List<Product> list =  productService.queryRecommentProduct();
+
+        return YouguuJsonHelper.returnJSON("0000", "ok",list);
+
     }
 
     /**
@@ -55,19 +61,19 @@ public class ProductAtion {
     @GET
     @Path(value = "/listProduct")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "查询产品列表接口", notes = "1.产品Tab页查询产品列表调用该接口，支持按展商、产品名称，产品类别查询。\r\n2.展商主页包含两个Tab页，第二个Tab显示展商的产品列表，调用此接口。", author = "更新于 2018-07-16")
+    @ApiOperation(value = "查询产品列表接口", notes = "1.产品Tab页查询产品列表调用该接口，支持按展商、产品名称，产品类别查询。<br/> 2.展商主页包含两个Tab页，第二个Tab显示展商的产品列表，调用此接口。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
+            @ApiResponse(code = "0000", message = "请求成功"  ,response = ProductModuleVO.class)
 
     })
-    public String listProduct(@QueryParam("companyId") int companyId,
-                                       @QueryParam("name") String name,
-                                       @QueryParam("categoryId") String categoryId,
-                                       @QueryParam("lastSeq") long lastSeq,
-                                       @QueryParam("num") int num) {
-        productService.listProduct(companyId, name, categoryId, lastSeq, num);
+    public String listProduct(@ApiParam(value = "展商的id ， 选填", defaultValue = "-1", required = false) @QueryParam("companyId") int companyId,
+                              @ApiParam(value = "产品名称 ， 选填", defaultValue = "-1", required = false)         @QueryParam("name") String name,
+                              @ApiParam(value = "分类id ， 选填", defaultValue = "-1", required = false)         @QueryParam("categoryId") String categoryId,
+                              @ApiParam(value = "返回list最小的seq ， 第一页不需要传", defaultValue = "-1", required = false)         @QueryParam("lastSeq") long lastSeq,
+                              @ApiParam(value = "数量 ， 必填", defaultValue = "5", required = true)         @QueryParam("num") int num) {
+        List<Product> list = productService.listProduct(companyId, name, categoryId, lastSeq, num);
 
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }
 
     /**
@@ -78,14 +84,15 @@ public class ProductAtion {
     @GET
     @Path(value = "/getProduct")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "查询产品基本信息", notes = "单个产品详情主页调用此接口。", author = "更新于 2018-07-16")
+    @ApiOperation(value = "查询产品基本信息", notes = "单个产品详情主页调用此接口。<br/> 注意内容 图片 下载地址使用 ***view字段", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
+            @ApiResponse(code = "0000", message = "请求成功" ,response = ProductRootVO.class),
 
     })
-    public String getProduct(@QueryParam("id") int id) {
-        productService.getProduct(id);
+    public String getProduct(@ApiParam(value = "产品id， 必填", defaultValue = "1", required = true)  @QueryParam("id") int id) {
 
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        Product product = productService.getProduct(id);
+
+        return YouguuJsonHelper.returnJSON("0000", "ok",product);
     }
 }
