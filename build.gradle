@@ -76,6 +76,12 @@ dependencies {
 
     compile 'javassist:javassist:3.12.1.GA'
     compile 'org.glassfish.jersey.media:jersey-media-multipart:2.25.1'
+
+    /** 微信小程序Java SDK**/
+    compile group: 'com.github.binarywang', name: 'weixin-java-miniapp', version: '3.1.0'
+    /** 微信公众号Java SDK**/
+    compile group: 'com.github.binarywang', name: 'weixin-java-mp', version: '3.1.0'
+
     compile fileTree(dir: 'src/main/webapp/WEB-INF/lib', include: '*.jar')
 
 }
