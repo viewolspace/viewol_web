@@ -1,6 +1,5 @@
 package com.viewol.web.wx.action;
 
-import com.alibaba.fastjson.JSON;
 import com.viewol.pojo.WxUserInfo;
 import com.viewol.service.IWxService;
 import com.viewol.web.common.Response;
@@ -49,25 +48,26 @@ public class WxAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String access_token(@ApiParam(value = "授权code", required = true) @QueryParam("jscode") String jscode) {
-        TokenResponse rs = new TokenResponse();
-
-        try{
-            String json = wxService.getAccessToken(jscode);
-            if(json != null && !"".equals(json)){
-                TokenResponse.Token token = JSON.parseObject(json, TokenResponse.Token.class);
-                rs.setStatus("0000");
-                rs.setMessage("授权成功");
-                rs.setResult(token);
-            } else {
-                rs.setStatus("0002");
-                rs.setMessage("授权失败");
-            }
-        } catch (Exception e){
-            rs.setStatus("0001");
-            rs.setMessage("系统异常");
-        }
-
-        return rs.toJSONString();
+//        TokenResponse rs = new TokenResponse();
+//
+//        try{
+//            String json = wxService.getAccessToken(jscode);
+//            if(json != null && !"".equals(json)){
+//                TokenResponse.Token token = JSON.parseObject(json, TokenResponse.Token.class);
+//                rs.setStatus("0000");
+//                rs.setMessage("授权成功");
+//                rs.setResult(token);
+//            } else {
+//                rs.setStatus("0002");
+//                rs.setMessage("授权失败");
+//            }
+//        } catch (Exception e){
+//            rs.setStatus("0001");
+//            rs.setMessage("系统异常");
+//        }
+//
+//        return rs.toJSONString();
+        return null;
     }
 
     /**
