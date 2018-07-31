@@ -41,8 +41,8 @@ public class RecommendAction {
             @ApiResponse(code = "0000", message = "请求成功" ,response = RecommendModuleVO.class)
 
     })
-    public String listByCategory(@ApiParam(value = "1 展商 2 产品", defaultValue = "1", required = true) @QueryParam("categoryId") String categoryId,
-                                 @ApiParam(value = "分类", defaultValue = "00010001", required = true) @QueryParam("type") int type) {
+    public String listByCategory(@ApiParam(value = "分类ID", defaultValue = "00010001", required = true) @QueryParam("categoryId") String categoryId,
+                                 @ApiParam(value = "1 展商 2 产品", defaultValue = "1", required = true) @QueryParam("type") int type) {
 
         if(categoryId!=null && categoryId.length()>8){ //只做第一层的推荐
             categoryId = categoryId.substring(0,8);
