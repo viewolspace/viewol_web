@@ -1,12 +1,13 @@
 package com.viewol.web.schedule.action;
 
-import com.viewol.web.common.Response;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.viewol.pojo.Schedule;
 import com.viewol.pojo.ScheduleVO;
-import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.service.IScheduleService;
+import com.viewol.web.common.Response;
+import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.web.schedule.vo.ScheduleResponse;
-import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
@@ -27,6 +28,7 @@ public class ScheduleAction {
 
     @Resource
     private IScheduleService scheduleService;
+
 
     /**
      * 查询主办方的活动
@@ -64,7 +66,12 @@ public class ScheduleAction {
             }
 
             rs.setResult(voList);
-            return rs.toJSONString();
+
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
+//            return rs.toJSONString();
         } catch (Exception e){
             Response rs = new Response();
             rs.setStatus("0001");
@@ -118,7 +125,10 @@ public class ScheduleAction {
             }
 
             rs.setResult(voList);
-            return rs.toJSONString();
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
         } catch (Exception e){
             Response rs = new Response();
             rs.setStatus("0001");
@@ -175,7 +185,10 @@ public class ScheduleAction {
             }
 
             rs.setResult(voList);
-            return rs.toJSONString();
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
         } catch (Exception e){
             Response rs = new Response();
             rs.setStatus("0001");
@@ -233,7 +246,10 @@ public class ScheduleAction {
             rs.setMessage("查询成功");
             rs.setResult(vo);
 
-            return rs.toJSONString();
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
 
         } catch (Exception e){
             Response rs = new Response();
