@@ -61,7 +61,7 @@ public class ScheduleAction {
                 vo.setTitle(schedule.getTitle());
                 vo.setCompanyId(schedule.getCompanyId());
                 vo.setCompanyName(schedule.getCompanyName());
-                vo.setCreateTime(schedule.getcTime());
+                vo.setCreateTime(schedule.getsTime());
                 voList.add(vo);
             }
 
@@ -120,7 +120,7 @@ public class ScheduleAction {
                 vo.setTitle(scheduleVO.getTitle());
                 vo.setCompanyId(scheduleVO.getCompanyId());
                 vo.setCompanyName(scheduleVO.getCompanyName());
-                vo.setCreateTime(scheduleVO.getcTime());
+                vo.setCreateTime(scheduleVO.getsTime());
                 voList.add(vo);
             }
 
@@ -181,7 +181,7 @@ public class ScheduleAction {
                 vo.setTitle(schedule.getTitle());
                 vo.setCompanyId(schedule.getCompanyId());
                 vo.setCompanyName(schedule.getCompanyName());
-                vo.setCreateTime(schedule.getcTime());
+                vo.setCreateTime(schedule.getsTime());
                 voList.add(vo);
             }
 
