@@ -12,10 +12,9 @@ import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 
 @SwaggerDefinition(
         tags = {
@@ -27,8 +26,64 @@ import javax.ws.rs.QueryParam;
 @Controller("wxAction")
 public class WxAction {
 
+
+
     @Resource
     private IWxService wxService;
+
+    /**
+     * 验证token
+     * @return
+     */
+
+    @GET
+    @Path(value = "/handler")
+    @Produces("text/html;charset=UTF-8")
+    public String handler(@QueryParam("signature") String signature,
+                          @QueryParam("timestamp") String timestamp,
+                          @QueryParam("nonce") String nonce,
+                          @QueryParam("echostr") String echostr){
+        if(echostr!=null) return echostr;
+        return "";
+    }
+
+    /**
+     * 在微信用户和公众号产生交互的过程中，
+     * 用户的某些操作会使得微信服务器通过事件推送的形式通知到开发者在开发者中心处设置的服务器地址，从而开发者可以获取到该信息。
+     * @param signature
+     * @param timestamp
+     * @param nonce
+     * @param echostr
+     * @param request
+     * @return
+     */
+    @POST
+    @Path(value = "/handler")
+    @Produces("text/html;charset=UTF-8")
+    public String handler(@QueryParam("signature") String signature,
+                          @QueryParam("timestamp") String timestamp,
+                          @QueryParam("nonce") String nonce,
+                          @QueryParam("echostr") String echostr,
+                          @Context HttpServletRequest request){
+//        Map<String, String> map = WechatMessageUtil.xmlToMap(request);
+//        String event = map.get("Event");
+//        loger.info("data:{}",map.toString());
+//        String open_id = map.get("FromUserName");
+//        String eventKey;
+//        switch (event){
+//            case WechatMessageUtil.MESSAGE_EVENT_SUBSCRIBE:
+//
+//                break;
+//            case  WechatMessageUtil.MESSAGE_EVENT_SCAN:
+//
+//                break;
+//            default:
+//                break;
+//        }
+
+        return "success";
+    }
+
 
     /**
      * 网页授权，获取access_token(非基础access_token)

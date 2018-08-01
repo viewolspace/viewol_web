@@ -189,4 +189,12 @@ public class ProductVO {
     public void setPdfUrlView(String pdfUrlView) {
         this.pdfUrlView = pdfUrlView;
     }
+
+    public String getReImgView() {
+        return reImgView;
+    }
+
+    public void setReImgView(String reImgView) {
+        this.reImgView = reImgView;
+    }
 }
