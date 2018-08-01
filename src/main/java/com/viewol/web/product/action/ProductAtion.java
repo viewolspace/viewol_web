@@ -36,7 +36,7 @@ public class ProductAtion {
     @GET
     @Path(value = "/recommentProductList")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "查询首页推荐产品列表", notes = "首页产品推荐一排3个，显示两排，然后自动横向滚动，一共12个。 <br/> 此接口需要使用的属性：id ，imageView ，name", author = "更新于 2018-07-16")
+    @ApiOperation(value = "查询首页推荐产品列表", notes = "首页产品 然后自动横向滚动，一共12个。 <br/> 此接口需要使用的属性：id ，reImgView ，name", author = "更新于 2018-07-16")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功" ,response = ProductModuleVO.class),
 
