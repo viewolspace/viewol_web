@@ -20,20 +20,20 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 
 @SwaggerDefinition(
         tags = {
-                @Tag(name="v1.0",description="微信授权接口")
+                @Tag(name = "v1.0", description = "微信授权接口")
         }
 )
 @Api(value = "WxAction")
-@Path( value = "wx")
+@Path(value = "wx")
 @Controller("wxAction")
 public class WxAction {
+
 
     @Resource
     private IWxService wxService;
@@ -43,7 +43,64 @@ public class WxAction {
     private IBUserService bUserService;
 
     /**
+     * 验证token
+     *
+     * @return
+     */
+
+    @GET
+    @Path(value = "/handler")
+    @Produces("text/html;charset=UTF-8")
+    public String handler(@QueryParam("signature") String signature,
+                          @QueryParam("timestamp") String timestamp,
+                          @QueryParam("nonce") String nonce,
+                          @QueryParam("echostr") String echostr) {
+        if (echostr != null) return echostr;
+        return "";
+    }
+
+    /**
+     * 在微信用户和公众号产生交互的过程中，
+     * 用户的某些操作会使得微信服务器通过事件推送的形式通知到开发者在开发者中心处设置的服务器地址，从而开发者可以获取到该信息。
+     *
+     * @param signature
+     * @param timestamp
+     * @param nonce
+     * @param echostr
+     * @param request
+     * @return
+     */
+    @POST
+    @Path(value = "/handler")
+    @Produces("text/html;charset=UTF-8")
+    public String handler(@QueryParam("signature") String signature,
+                          @QueryParam("timestamp") String timestamp,
+                          @QueryParam("nonce") String nonce,
+                          @QueryParam("echostr") String echostr,
+                          @Context HttpServletRequest request) {
+//        Map<String, String> map = WechatMessageUtil.xmlToMap(request);
+//        String event = map.get("Event");
+//        loger.info("data:{}",map.toString());
+//        String open_id = map.get("FromUserName");
+//        String eventKey;
+//        switch (event){
+//            case WechatMessageUtil.MESSAGE_EVENT_SUBSCRIBE:
+//
+//                break;
+//            case  WechatMessageUtil.MESSAGE_EVENT_SCAN:
+//
+//                break;
+//            default:
+//                break;
+//        }
+
+        return "success";
+    }
+
+
+    /**
      * 小程序自动登录
+     *
      * @param code 临时授权code
      * @return
      */
@@ -63,7 +120,7 @@ public class WxAction {
 
         try {
             WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(code);
-            if(wxMaJscode2Session == null){
+            if (wxMaJscode2Session == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
             }
 
@@ -73,7 +130,7 @@ public class WxAction {
 
             //已注册，返回用户信息
             FUser fuser = fUserService.getUserByUuid(unionid);
-            if(fuser != null){
+            if (fuser != null) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(fuser.getUserId());
                 userInfo.setUserName(fuser.getUserName());
@@ -95,14 +152,14 @@ public class WxAction {
             //注册新用户
             WxMaUserInfo wxMaUserInfo = wxService.getUserInfo(sessionKey, encryptedData, ivStr);
             fuser = new FUser();
-            if(wxMaUserInfo != null){
+            if (wxMaUserInfo != null) {
                 fuser.setHeadImgUrl(wxMaUserInfo.getAvatarUrl());
             }
             fuser.setUuid(unionid);
 
             int result = fUserService.addFUser(fuser, openid, unionid, FUserBind.TYPE_PROGRAM);
 
-            if(result > 0){
+            if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
@@ -118,7 +175,7 @@ public class WxAction {
                 rs.setStatus("0004");
                 rs.setMessage("注册失败");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             rs.setStatus("0001");
             rs.setMessage("系统异常");
         }
@@ -128,6 +185,7 @@ public class WxAction {
 
     /**
      * H5自动授权登录
+     *
      * @param jscode 临时授权code
      * @return
      */
@@ -144,9 +202,9 @@ public class WxAction {
     public String mpLogin(@ApiParam(value = "临时授权code", required = true) @QueryParam("jscode") String jscode) {
         LoginResponse rs = new LoginResponse();
 
-        try{
+        try {
             WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxService.getAccessToken(jscode);
-            if(wxMpOAuth2AccessToken == null){
+            if (wxMpOAuth2AccessToken == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
             }
 
@@ -156,7 +214,7 @@ public class WxAction {
 
             //已注册，返回用户信息
             FUser fuser = fUserService.getUserByUuid(unionId);
-            if(fuser != null){
+            if (fuser != null) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(fuser.getUserId());
                 userInfo.setUserName(fuser.getUserName());
@@ -176,7 +234,7 @@ public class WxAction {
             }
 
             WxMpUser wxMpUser = wxService.getUserInfo(accessToken, openid);
-            if(wxMpUser == null){
+            if (wxMpUser == null) {
                 return YouguuJsonHelper.returnJSON("0003", "获取第三方数据失败");
             }
 
@@ -186,7 +244,7 @@ public class WxAction {
 
             int result = fUserService.addFUser(openid, unionId, FUserBind.TYPE_WEIXIN);
 
-            if(result > 0){
+            if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
@@ -202,7 +260,7 @@ public class WxAction {
                 rs.setStatus("0004");
                 rs.setMessage("注册失败");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             rs.setStatus("0001");
             rs.setMessage("系统异常");
         }
@@ -212,6 +270,7 @@ public class WxAction {
 
     /**
      * 查询用户是否已关注公众号
+     *
      * @param userId 用户ID
      * @return
      */
@@ -226,12 +285,12 @@ public class WxAction {
     public String isFollow(@ApiParam(value = "用户ID", required = true) @QueryParam("userId") int userId) {
         FollowResponse rs = new FollowResponse();
 
-        try{
+        try {
             boolean result = wxService.isFollow(userId);
             rs.setStatus("0000");
             rs.setMessage("查询成功");
             rs.setResult(result);
-        } catch (Exception e){
+        } catch (Exception e) {
             rs.setStatus("0001");
             rs.setMessage("系统异常");
         }
@@ -242,6 +301,7 @@ public class WxAction {
 
     /**
      * 展商业务员扫码登录接口
+     *
      * @param jscode
      * @return
      */
@@ -259,9 +319,9 @@ public class WxAction {
                              @ApiParam(value = "展商ID", required = true) @QueryParam("companyId") int companyId) {
         BuserLoginResponse rs = new BuserLoginResponse();
 
-        try{
+        try {
             WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxService.getAccessToken(jscode);
-            if(wxMpOAuth2AccessToken == null){
+            if (wxMpOAuth2AccessToken == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
             }
 
@@ -271,7 +331,7 @@ public class WxAction {
 
             //业务员已注册，返回业务员信息
             BUser bUser = bUserService.getBUser(openid);
-            if(bUser!=null){
+            if (bUser != null) {
                 BuserLoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(bUser.getUserId());
                 userInfo.setUserName(bUser.getUserName());
@@ -291,7 +351,7 @@ public class WxAction {
 
             //注册
             WxMpUser wxMpUser = wxService.getUserInfo(accessToken, openid);
-            if(wxMpUser == null){
+            if (wxMpUser == null) {
                 return YouguuJsonHelper.returnJSON("0003", "获取第三方数据失败");
             }
 
@@ -304,7 +364,7 @@ public class WxAction {
 
             int result = bUserService.addBUser(bUser);
 
-            if(result > 0){
+            if (result > 0) {
                 BuserLoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(bUser.getHeadImgUrl());
@@ -321,7 +381,7 @@ public class WxAction {
                 rs.setStatus("0004");
                 rs.setMessage("注册失败");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             rs.setStatus("0001");
             rs.setMessage("系统异常");
         }

@@ -79,7 +79,7 @@ public class ScheduleResponse extends Response {
         @ApiModelProperty(value = "推荐位结束时间")
         private Date recommendETime;
 
-        @ApiModelProperty(value = "是否允许报名，0-不允许报名，1-可以报名，2-已经报名")
+        @ApiModelProperty(value = "是否允许报名，0-不允许报名，1-可以报名，2-已经报名 3-活动已经结束")
         private int applyStatus;
 
         public Integer getId() {

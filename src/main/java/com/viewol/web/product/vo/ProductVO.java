@@ -51,6 +51,9 @@ public class ProductVO {
     @ApiModelProperty(value = "pdf下载地址 前端使用字段")
     private String pdfUrlView;
 
+    @ApiModelProperty(value = "首页推荐的图片 前端使用字段")
+    private String reImgView;
+
     public Integer getId() {
         return id;
     }
@@ -185,5 +188,13 @@ public class ProductVO {
 
     public void setPdfUrlView(String pdfUrlView) {
         this.pdfUrlView = pdfUrlView;
+    }
+
+    public String getReImgView() {
+        return reImgView;
+    }
+
+    public void setReImgView(String reImgView) {
+        this.reImgView = reImgView;
     }
 }
