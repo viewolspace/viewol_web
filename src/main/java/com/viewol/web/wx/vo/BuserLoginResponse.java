@@ -50,9 +50,6 @@ public class BuserLoginResponse extends Response {
         @ApiModelProperty(value = "展商ID")
         private int companyId;
 
-        @ApiModelProperty(value = "会话session，登录成功之后，调用其他接口，需要在请求头传入该session")
-        private String sessionId;
-
         @ApiModelProperty(value = "业务员状态，0:待审；1:可使用；-1:打回")
         private int status;
 
@@ -102,14 +99,6 @@ public class BuserLoginResponse extends Response {
 
         public void setCompanyId(int companyId) {
             this.companyId = companyId;
-        }
-
-        public String getSessionId() {
-            return sessionId;
-        }
-
-        public void setSessionId(String sessionId) {
-            this.sessionId = sessionId;
         }
 
         public int getStatus() {

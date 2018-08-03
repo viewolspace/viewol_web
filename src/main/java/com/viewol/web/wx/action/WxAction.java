@@ -5,8 +5,10 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.viewol.pojo.BUser;
 import com.viewol.pojo.FUser;
 import com.viewol.pojo.FUserBind;
+import com.viewol.pojo.UserSession;
 import com.viewol.service.IBUserService;
 import com.viewol.service.IFUserService;
+import com.viewol.service.IUserSessionService;
 import com.viewol.service.IWxService;
 import com.viewol.web.common.Response;
 import com.viewol.web.ucard.vo.UserCardResponse;
@@ -41,6 +43,8 @@ public class WxAction {
     private IFUserService fUserService;
     @Resource
     private IBUserService bUserService;
+    @Resource
+    private IUserSessionService userSessionService;
 
     /**
      * 验证token
@@ -141,7 +145,9 @@ public class WxAction {
                 userInfo.setAge(fuser.getAge());
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
                 userInfo.setCompanyId(fuser.getCompanyId());
-                userInfo.setSessionId("");
+
+                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+                userInfo.setSessionId(sessionId);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -225,7 +231,9 @@ public class WxAction {
                 userInfo.setAge(fuser.getAge());
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
                 userInfo.setCompanyId(fuser.getCompanyId());
-                userInfo.setSessionId("");
+
+                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+                userInfo.setSessionId(sessionId);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -339,9 +347,7 @@ public class WxAction {
                 userInfo.setPosition(bUser.getPosition());
                 userInfo.setHeadImgUrl(bUser.getHeadImgUrl());
                 userInfo.setCompanyId(bUser.getCompanyId());
-                userInfo.setSessionId("");
                 userInfo.setStatus(bUser.getStatus());
-
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -369,10 +375,6 @@ public class WxAction {
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(bUser.getHeadImgUrl());
                 userInfo.setStatus(BUser.STATUS_TRIAL);
-
-                //TODO 生成小观时讯的session
-                String session = "20180802112845";
-                userInfo.setSessionId(session);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
