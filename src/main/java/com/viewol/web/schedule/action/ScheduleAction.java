@@ -167,10 +167,10 @@ public class ScheduleAction {
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
-
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
             if(null == scheduleList || scheduleList.size() == 0){
-                rs.setStatus("0000");
-                rs.setMessage("查询成功");
+
                 return rs.toJSONString();
             }
 
@@ -186,7 +186,7 @@ public class ScheduleAction {
             }
 
             rs.setResult(voList);
-            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mi";//设置日期格式
 
             return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 
