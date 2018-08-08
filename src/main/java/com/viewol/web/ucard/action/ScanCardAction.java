@@ -1,15 +1,24 @@
 package com.viewol.web.ucard.action;
 
 import io.swagger.annotations.*;
+import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.io.IOUtils;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.springframework.stereotype.Controller;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created by lenovo on 2018/8/1.
@@ -34,15 +43,73 @@ public class ScanCardAction {
 
     })
 
-    public String scanCard(  MultipartFormDataInput input
-
-
-                          ){
+    public String scanCard(  MultipartFormDataInput input ){
+        InputStream is = null;
+        ByteArrayOutputStream os = null;
+        ByteArrayInputStream bis = null;
         try {
-            String content = input.getFormDataPart("content", String.class,null);
-            System.out.println(content);
-        } catch (IOException e) {
+
+            List<InputPart> list=input.getFormDataMap().get("img");
+            if(list!=null&&list.size()>0){
+                InputPart part = list.get(0);
+                is=part.getBody(InputStream.class,null);
+                byte[] fileByte = IOUtils.toByteArray(is);
+
+                bis= new ByteArrayInputStream(fileByte);
+                bis.mark(0);
+                BufferedImage bi = ImageIO.read(bis);
+
+                int h = bi.getHeight();
+
+                int w = bi.getWidth();
+
+                os=new ByteArrayOutputStream();
+
+                System.out.println("宽度：" + w + " 高度："+h);
+
+                //
+
+                bis.reset();
+
+                if(w > h && w > 960){ //正常的横屏
+
+                    Thumbnails.of(bis).size(960, 600).toOutputStream(os);
+
+                    System.out.println(os.toByteArray().length);
+
+                }else if( h > w && h > 960){
+                    Thumbnails.of(bis).size(w/(h/960), 960).toOutputStream(os);
+
+                    System.out.println(os.toByteArray().length);
+                }
+
+
+
+
+//                //判断图片大小
+//                double img_size = fileByte.length/1024;
+//                double scale = 1;
+//                if(img_size > 150){
+//                    scale = 150/img_size;
+//                }
+//
+//
+//                bis= new ByteArrayInputStream(fileByte);
+//
+//
+//
+//                Thumbnails.of(bis).scale(scale).toOutputStream(os);
+//
+//                System.out.println(os.toByteArray().length/1024);
+
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if(is!=null){ try {is.close();} catch (IOException e) {e.printStackTrace();}}
+            if(os!=null){ try {os.close();} catch (IOException e) {e.printStackTrace();}}
+            if(bis!=null){ try {bis.close();} catch (IOException e) {e.printStackTrace();}}
         }
 
         return "{\"status\":\"ok\"}";

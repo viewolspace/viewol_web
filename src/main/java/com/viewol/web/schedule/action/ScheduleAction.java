@@ -182,15 +182,17 @@ public class ScheduleAction {
                 vo.setCompanyId(schedule.getCompanyId());
                 vo.setCompanyName(schedule.getCompanyName());
                 vo.setCreateTime(schedule.getsTime());
+                vo.setSeq(schedule.getSeq());
                 voList.add(vo);
             }
 
             rs.setResult(voList);
-            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mi";//设置日期格式
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
 
             return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 
         } catch (Exception e){
+            e.printStackTrace();
             Response rs = new Response();
             rs.setStatus("0001");
             rs.setMessage("系统异常");

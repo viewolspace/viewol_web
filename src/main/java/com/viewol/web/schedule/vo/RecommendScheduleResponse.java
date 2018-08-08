@@ -50,6 +50,9 @@ public class RecommendScheduleResponse extends Response {
 		@ApiModelProperty(value = "创建时间")
 		private Date createTime;
 
+		@ApiModelProperty(value = "序列号")
+		private long seq;
+
 		public Integer getId() {
 			return id;
 		}
@@ -88,6 +91,14 @@ public class RecommendScheduleResponse extends Response {
 
 		public void setCreateTime(Date createTime) {
 			this.createTime = createTime;
+		}
+
+		public long getSeq() {
+			return seq;
+		}
+
+		public void setSeq(long seq) {
+			this.seq = seq;
 		}
 	}
 }
