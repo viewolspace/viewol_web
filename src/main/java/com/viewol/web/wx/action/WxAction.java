@@ -113,7 +113,7 @@ public class WxAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "小程序自动登录", notes = "", author = "更新于 2018-08-02")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功", response = UserCardResponse.class),
+            @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String maLogin(@ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
