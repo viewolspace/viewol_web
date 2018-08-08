@@ -15,7 +15,10 @@ import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @SwaggerDefinition(
-        info = @Info(description ="为安防小程序，H5提供接口支持。",
+        info = @Info(description ="为安防小程序，H5提供接口支持。" +
+                "<br>0000:成功返回。" +
+                "<br>0001:系统异常。" +
+                "<br>0101:登录状态失效，重新登录。",
                 version = "v1.0.0",
                 title = "安防小程序API文档",
                 contact= @Contact(name="test",email="test@163.com")
