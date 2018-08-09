@@ -163,16 +163,15 @@ public class WxAction {
             }
             fuser.setUuid(wxMaUserInfo.getUnionId());
 
-            int result = fUserService.addFUser(fuser, openid, unionid, FUserBind.TYPE_PROGRAM);
+            int result = fUserService.addFUser(fuser, openid, wxMaUserInfo.getUnionId(), FUserBind.TYPE_PROGRAM);
 
             if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
 
-                //TODO 生成小观时讯的session
-                String session = "20180802112845";
-                userInfo.setSessionId(session);
+                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+                userInfo.setSessionId(sessionId);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -257,9 +256,8 @@ public class WxAction {
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
 
-                //TODO 生成小观时讯的session
-                String session = "20180802112845";
-                userInfo.setSessionId(session);
+                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+                userInfo.setSessionId(sessionId);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
