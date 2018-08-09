@@ -117,8 +117,8 @@ public class WxAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String maLogin(@ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
-                          @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传") @QueryParam("encryptedData") String encryptedData,
-                          @ApiParam(value = "加密算法的初始向量,不需要获取微信用户信息可以不传") @QueryParam("ivStr") String ivStr) {
+                          @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传", required = true) @QueryParam("encryptedData") String encryptedData,
+                          @ApiParam(value = "加密算法的初始向量,不需要获取微信用户信息可以不传", required = true) @QueryParam("ivStr") String ivStr) {
 
         LoginResponse rs = new LoginResponse();
 
@@ -161,7 +161,7 @@ public class WxAction {
             if (wxMaUserInfo != null) {
                 fuser.setHeadImgUrl(wxMaUserInfo.getAvatarUrl());
             }
-            fuser.setUuid(unionid);
+            fuser.setUuid(wxMaUserInfo.getUnionId());
 
             int result = fUserService.addFUser(fuser, openid, unionid, FUserBind.TYPE_PROGRAM);
 
