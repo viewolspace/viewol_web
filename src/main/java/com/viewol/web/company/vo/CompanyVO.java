@@ -14,18 +14,37 @@ public class CompanyVO {
 
     @ApiModelProperty(value = "展商简称")
     private String shortName; //简称
+
+    @ApiModelProperty(value = "展商logo")
     private String logo;
+
+    @ApiModelProperty(value = "形象图")
     private String banner; //形象图
+
+    @ApiModelProperty(value = "列表图")
     private String image;  //列表图
 
     @ApiModelProperty(value = "展商位置")
     private String place;  //展馆的位置
+
+    @ApiModelProperty(value = "展商Svg定位")
     private String placeSvg;
+
+    @ApiModelProperty(value = "上传产品数量")
     private Integer productNum;
+
+    @ApiModelProperty(value = "时候允许申请活动：1-允许申请活动；0-不允许")
     private Integer canApply; //1 允许申请活动  0 不允许
+
+    @ApiModelProperty(value = "是否推荐展商：1-推荐；0-非推荐")
     private Integer isRecommend; //是否推荐展商 1 推荐 0 非推荐
+
+    @ApiModelProperty(value = "推荐位置")
     private Integer recommendNum; //推荐位置
+
+    @ApiModelProperty(value = "展商介绍")
     private String content;
+
     private long cTime;
     private long mTime;
     private long seq;

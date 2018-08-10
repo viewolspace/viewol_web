@@ -5,6 +5,7 @@ import com.viewol.pojo.Company;
 import com.viewol.pojo.CompanyCategory;
 import com.viewol.service.ICompanyService;
 import com.viewol.web.company.vo.CompanyListVO;
+import com.viewol.web.company.vo.CompanyModuleVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
@@ -82,7 +83,7 @@ public class CompanyAtion {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "查询展商基本信息", notes = "展商主页包含两个Tab页，第一Tab显示展商基本信息。", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "请求成功"),
+            @ApiResponse(code = "0000", message = "请求成功", response = CompanyModuleVO.class),
 
     })
     public String getCompany(@ApiParam(value = "展商的id", defaultValue = "", required = false) @QueryParam("id") int id) {
