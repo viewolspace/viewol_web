@@ -174,4 +174,39 @@ public class UserCardAction {
             return rs.toJSONString();
         }
     }
+
+
+    @GET
+    @Path(value = "/changeCard")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "用户与展商互换名片", notes = "用户与展商互换名片", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "交换成功", response = Response.class),
+            @ApiResponse(code = "0001", message = "已经交换过名片", response = Response.class),
+            @ApiResponse(code = "0002", message = "参数错误 ， userId为0 或者 bUserId为0", response = Response.class),
+            @ApiResponse(code = "0003", message = "交换失败", response = Response.class)
+    })
+    public String changeCard(@ApiParam(value = "展商ID", required = true) @QueryParam("companyId") int companyId,
+                            @ApiParam(value = "用户id", required = true) @QueryParam("userId") int userId,
+                            @ApiParam(value = "业务员id ， 扫码传递", required = true) @QueryParam("bUserId") int bUserId) {
+        if(userId <=0 || bUserId<=0){
+            return YouguuJsonHelper.returnJSON("0002","参数错误");
+        }
+        UserCardQuery query = new UserCardQuery();
+        query.setfUserId(userId);
+        query.setCompanyId(companyId);
+
+        List<UserCardVO> list = userCardService.listUserCard(query);
+
+        if(list!=null && list.size()>0){
+            return YouguuJsonHelper.returnJSON("0001","已经交换过名片");
+        }else{
+            int result = userCardService.addUserCard(userId, bUserId, companyId);
+
+            if(result>0){
+                return YouguuJsonHelper.returnJSON("0000","交换成功");
+            }
+        }
+        return YouguuJsonHelper.returnJSON("0003","交换失败");
+    }
 }

@@ -10,7 +10,6 @@ import com.viewol.web.fuser.vo.FUserResponse;
 import com.viewol.web.fuser.vo.UserBrowseResponse;
 import com.viewol.web.fuser.vo.UserCollectionResponse;
 import com.viewol.web.fuser.vo.UserDownloadResponse;
-import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
@@ -461,5 +460,40 @@ public class FuserAction {
             rs.setMessage("系统异常");
             return rs.toJSONString();
         }
+    }
+
+
+
+    /**
+     * 发送到邮箱
+     *
+     * @return
+     */
+    @GET
+    @Path(value = "/sendMail")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "发送到邮箱", notes = "可以进入“我的”-->“下载记录”，点击发送到邮箱。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+            @ApiResponse(code = "0002", message = "未设置邮箱", response = Response.class)
+    })
+    public String sendMail(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId,
+                           @ApiParam(value = "需要发送邮件的id 多个使用逗号分隔", required = true) @QueryParam("ids") String ids) {
+        Response rs = new Response();
+        try {
+            FUser fUser = fUserService.getFuser(userId);
+            if(fUser.getEmail()==null || "".equals(fUser.getEmail())){
+                rs.setStatus("0002");
+                rs.setMessage("请先设置邮箱");
+            }else{
+                //TODO 将pdf文件发送到邮箱
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+        }
+        return rs.toJSONString();
     }
 }
