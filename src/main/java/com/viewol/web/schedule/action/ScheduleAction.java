@@ -8,6 +8,7 @@ import com.viewol.service.IScheduleService;
 import com.viewol.web.common.Response;
 import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.web.schedule.vo.ScheduleResponse;
+import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
@@ -286,6 +287,10 @@ public class ScheduleAction {
         Response rs = new Response();
 
         try{
+            if(userId <= 0){
+                return YouguuJsonHelper.returnJSON("0002","请先登录");
+            }
+
             int result = scheduleService.applyJoin(userId, scheduleId, needReminder);
             if(result>0){
                 rs.setStatus("0000");

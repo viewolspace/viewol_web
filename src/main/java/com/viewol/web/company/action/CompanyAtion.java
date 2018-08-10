@@ -67,9 +67,9 @@ public class CompanyAtion {
                               @ApiParam(value = "展商分类 选填", defaultValue = "", required = false) @QueryParam("categoryId") String categoryId,
                               @ApiParam(value = "最小seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
                               @ApiParam(value = "数量 必填", defaultValue = "5", required = true) @QueryParam("num") int num) {
-        companyService.listCompany(keyWord, categoryId, lastSeq, num);
+        List<Company> list  = companyService.listCompany(keyWord, categoryId, lastSeq, num);
 
-        return YouguuJsonHelper.returnJSON("0000", "ok");
+        return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }
 
     /**

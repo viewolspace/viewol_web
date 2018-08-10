@@ -179,7 +179,7 @@ public class UserCardAction {
     @GET
     @Path(value = "/changeCard")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "用户与展商互换名片", notes = "用户与展商互换名片", author = "更新于 2018-07-16")
+    @ApiOperation(value = "用户与展商互换名片", notes = "用户与展商互换名片，此功能是用户扫描展商二维码的时候实现的", author = "更新于 2018-07-16")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "交换成功", response = Response.class),
             @ApiResponse(code = "0001", message = "已经交换过名片", response = Response.class),
