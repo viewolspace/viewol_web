@@ -331,7 +331,7 @@ public class FuserAction {
     public String listUserCollection(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId,
                                      @ApiParam(value = "类型，1-展商收藏；2-产品收藏", required = true) @QueryParam("type") int type,
                                      @ApiParam(value = "等同PageSize", required = true) @QueryParam("num") int num,
-                                     @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId) {
+                                     @ApiParam(value = "最后一条记录ID，分页用", required = false) @QueryParam("lastId") int lastId) {
         try {
             UserCollectionResponse rs = new UserCollectionResponse();
             List<UserCollection> list = userCollectionService.listUserCollection(userId, type, num, lastId);
@@ -381,7 +381,7 @@ public class FuserAction {
     })
     public String listUserBrowse(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId,
                                  @ApiParam(value = "浏览类型，1-展商；2-产品", required = true) @QueryParam("type") int type,
-                                 @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId,
+                                 @ApiParam(value = "最后一条记录ID，分页用", required = false) @QueryParam("lastId") int lastId,
                                  @ApiParam(value = "等同PageSize", required = true) @QueryParam("num") int num) {
 
         try {
@@ -434,7 +434,7 @@ public class FuserAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String listDownloadRecord(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId,
-                                     @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId,
+                                     @ApiParam(value = "最后一条记录ID，分页用", required = false) @QueryParam("lastId") int lastId,
                                      @ApiParam(value = "等同PageSize", required = true) @QueryParam("num") int num) {
 
         try {

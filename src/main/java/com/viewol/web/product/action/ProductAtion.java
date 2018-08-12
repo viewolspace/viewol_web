@@ -2,8 +2,10 @@ package com.viewol.web.product.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Product;
+import com.viewol.pojo.UserBrowse;
 import com.viewol.pojo.UserCollection;
 import com.viewol.service.IProductService;
+import com.viewol.service.IUserBrowseService;
 import com.viewol.service.IUserCollectionService;
 import com.viewol.web.product.vo.ProductModuleVO;
 import com.viewol.web.product.vo.ProductRootVO;
@@ -33,6 +35,10 @@ public class ProductAtion {
 
     @Resource
     private IUserCollectionService userCollectionService;
+
+    @Resource
+    private IUserBrowseService userBrowseService;
+
     /**
      * 推荐产品查询，共12个
      *
@@ -110,7 +116,14 @@ public class ProductAtion {
         json.put("result",product);
         json.put("collection",collection);
 
+        try{
+            if(userId>0){
+                userBrowseService.addUserBrowse(userId, UserBrowse.TYPE_PRODUCT,id);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return json.toJSONString();
     }
 }

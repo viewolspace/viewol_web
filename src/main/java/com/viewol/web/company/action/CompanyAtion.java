@@ -3,8 +3,10 @@ package com.viewol.web.company.action;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Company;
 import com.viewol.pojo.CompanyCategory;
+import com.viewol.pojo.UserBrowse;
 import com.viewol.pojo.UserCollection;
 import com.viewol.service.ICompanyService;
+import com.viewol.service.IUserBrowseService;
 import com.viewol.service.IUserCollectionService;
 import com.viewol.web.company.vo.CompanyListVO;
 import com.viewol.web.company.vo.CompanyModuleVO;
@@ -34,6 +36,9 @@ public class CompanyAtion {
 
     @Resource
     private IUserCollectionService userCollectionService;
+
+    @Resource
+    private IUserBrowseService userBrowseService;
     /**
      * 推荐展商查询，共12个
      * @return
@@ -115,6 +120,15 @@ public class CompanyAtion {
         json.put("categoryId",categoryId);
         json.put("collection",collection);
 
+
+        try{
+            if(userId>0){
+                userBrowseService.addUserBrowse(userId, UserBrowse.TYPE_COM,id);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return json.toJSONString();
     }
