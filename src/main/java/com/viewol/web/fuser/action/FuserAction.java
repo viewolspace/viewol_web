@@ -439,7 +439,7 @@ public class FuserAction {
 
         try {
             UserDownloadResponse rs = new UserDownloadResponse();
-            List<UserDownload> list = userDownloadService.listDownload(userId, lastId, num);
+            List<UserDownload> list = userDownloadService.listDownload(userId,num, lastId);
             if(null == list || list.size() == 0){
                 rs.setStatus("0000");
                 rs.setMessage("暂无数据");
