@@ -474,6 +474,42 @@ public class FuserAction {
 
 
     /**
+     * 我的下载记录
+     *
+     * @return
+     */
+    @GET
+    @Path(value = "/addDownload")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "添加下载记录", notes = "下载pdf的时候调用", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String addDownload(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId,
+                                     @ApiParam(value = "产品id", required = true) @QueryParam("productId") int productId) {
+
+        try {
+            Response rs = new Response();
+            if(userId > 0){
+                userDownloadService.addUserDownload(userId, productId);
+            }
+
+
+            rs.setStatus("0000");
+            rs.setMessage("成功");
+            return rs.toJSONString();
+        } catch (Exception e) {
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
+
+
+    /**
      * 发送到邮箱
      *
      * @return
