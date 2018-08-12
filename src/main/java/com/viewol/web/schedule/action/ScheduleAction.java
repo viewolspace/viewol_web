@@ -295,7 +295,16 @@ public class ScheduleAction {
             if(result>0){
                 rs.setStatus("0000");
                 rs.setMessage("报名成功");
-            }else {
+            } else if(result == -98){
+                rs.setStatus("0002");
+                rs.setMessage("活动不存在");
+            } else if(result == -97){
+                rs.setStatus("0002");
+                rs.setMessage("活动已结束");
+            } else if(result == -99){
+                rs.setStatus("0002");
+                rs.setMessage("已报名，不能重复报名");
+            } else {
                 rs.setStatus("0002");
                 rs.setMessage("报名失败");
             }
