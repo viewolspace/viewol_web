@@ -3,7 +3,9 @@ package com.viewol.web.company.action;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Company;
 import com.viewol.pojo.CompanyCategory;
+import com.viewol.pojo.UserCollection;
 import com.viewol.service.ICompanyService;
+import com.viewol.service.IUserCollectionService;
 import com.viewol.web.company.vo.CompanyListVO;
 import com.viewol.web.company.vo.CompanyModuleVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
@@ -30,6 +32,8 @@ public class CompanyAtion {
     @Resource
     private ICompanyService companyService;
 
+    @Resource
+    private IUserCollectionService userCollectionService;
     /**
      * 推荐展商查询，共12个
      * @return
@@ -86,7 +90,8 @@ public class CompanyAtion {
             @ApiResponse(code = "0000", message = "请求成功", response = CompanyModuleVO.class),
 
     })
-    public String getCompany(@ApiParam(value = "展商的id", defaultValue = "", required = false) @QueryParam("id") int id) {
+    public String getCompany(@ApiParam(value = "展商的id", defaultValue = "", required = true) @QueryParam("id") int id,
+                             @ApiParam(value = "用户id 没有传0", defaultValue = "0", required = false) @QueryParam("userId") int userId) {
 
         String categoryId = null;
 
@@ -98,12 +103,17 @@ public class CompanyAtion {
             categoryId = list.get(0).getCategoryId();
         }
 
+        int collection = 0;
 
+        if(userId > 0){
+            collection = userCollectionService.isCollection(userId, UserCollection.TYPE_COM,id);
+        }
         JSONObject json = new JSONObject();
         json.put("code","0000");
         json.put("message","ok");
         json.put("result",company);
         json.put("categoryId",categoryId);
+        json.put("collection",collection);
 
 
         return json.toJSONString();

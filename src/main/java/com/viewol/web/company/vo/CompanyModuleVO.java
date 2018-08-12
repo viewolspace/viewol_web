@@ -16,6 +16,9 @@ public class CompanyModuleVO extends Response {
     @ApiModelProperty(value = "分类id")
     private String categoryId;
 
+    @ApiModelProperty(value = "0 未收藏  1 已收藏")
+    private int collection;
+
     public CompanyVO getResult() {
         return result;
     }
@@ -30,5 +33,13 @@ public class CompanyModuleVO extends Response {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public int getCollection() {
+        return collection;
+    }
+
+    public void setCollection(int collection) {
+        this.collection = collection;
     }
 }

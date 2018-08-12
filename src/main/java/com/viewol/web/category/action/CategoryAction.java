@@ -1,5 +1,8 @@
 package com.viewol.web.category.action;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Category;
 import com.viewol.service.ICategoryService;
 import com.viewol.web.category.vo.CategoryModuleVO;
@@ -12,6 +15,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import java.util.ArrayList;
 import java.util.List;
 
 @SwaggerDefinition(
@@ -51,7 +55,47 @@ public class CategoryAction {
     public String listCategory(@ApiParam(value = "0001 展商分类 0002 产品分类", defaultValue = "0001", required = true)@QueryParam("parentId") String parentId) {
         List<Category> list =  categoryService.listAll(parentId);
 
-        return YouguuJsonHelper.returnJSON("0000", "ok" , list);
+        JSONArray root = this.parseData(list);
+
+        return YouguuJsonHelper.returnJSON("0000", "ok" , root);
+    }
+
+
+
+
+
+
+
+    private JSONArray parseData(List<Category> list){
+        JSONArray root = new JSONArray();
+        List<JSONObject> temp = new ArrayList<>();
+        for(Category category:list){
+            JSONObject json = new JSONObject();
+            json = JSON.parseObject(JSON.toJSONString(category));
+            temp.add(json);
+        }
+
+        for(JSONObject j1:temp){
+            for(JSONObject j2:temp){
+                if(j1.getString("id").equals(j2.getString("parentId"))){
+                    JSONArray array = j1.getJSONArray("child");
+                    if(array==null){
+                        array=new JSONArray();
+                        j1.put("child",array);
+                    }
+                    array.add(j2);
+                }
+            }
+        }
+
+        for(JSONObject j1:temp){
+            if(j1.getString("parentId").length()==4){
+                root.add(j1);
+            }
+        }
+
+
+        return root;
     }
 
 }

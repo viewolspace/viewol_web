@@ -243,14 +243,23 @@ public class FuserAction {
                                     @ApiParam(value = "展商id(产品id)", required = true) @FormParam("thirdId") int thirdId) {
        try {
            Response rs = new Response();
-           int result = userCollectionService.addUserCollection(userId, type, thirdId);
+
+
+           int result = userCollectionService.isCollection(userId, type, thirdId);
            if(result>0){
                rs.setStatus("0000");
-               rs.setMessage("收藏成功");
-           } else {
-               rs.setStatus("0003");
-               rs.setMessage("收藏失败");
+               rs.setMessage("已经收藏");
+           }else{
+               result = userCollectionService.addUserCollection(userId, type, thirdId);
+               if(result>0){
+                   rs.setStatus("0000");
+                   rs.setMessage("收藏成功");
+               } else {
+                   rs.setStatus("0003");
+                   rs.setMessage("收藏失败");
+               }
            }
+
            return rs.toJSONString();
        } catch (Exception e) {
            Response rs = new Response();
@@ -290,7 +299,7 @@ public class FuserAction {
                 rs.setMessage("取消收藏成功");
             } else {
                 rs.setStatus("0003");
-                rs.setMessage("取消收藏失败");
+                rs.setMessage("还未收藏，无法取消");
             }
             return rs.toJSONString();
         } catch (Exception e) {

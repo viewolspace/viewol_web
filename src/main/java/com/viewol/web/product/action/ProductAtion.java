@@ -1,7 +1,10 @@
 package com.viewol.web.product.action;
 
+import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Product;
+import com.viewol.pojo.UserCollection;
 import com.viewol.service.IProductService;
+import com.viewol.service.IUserCollectionService;
 import com.viewol.web.product.vo.ProductModuleVO;
 import com.viewol.web.product.vo.ProductRootVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
@@ -28,6 +31,8 @@ public class ProductAtion {
     @Resource
     private IProductService productService;
 
+    @Resource
+    private IUserCollectionService userCollectionService;
     /**
      * 推荐产品查询，共12个
      *
@@ -89,10 +94,23 @@ public class ProductAtion {
             @ApiResponse(code = "0000", message = "请求成功" ,response = ProductRootVO.class),
 
     })
-    public String getProduct(@ApiParam(value = "产品id， 必填", defaultValue = "1", required = true)  @QueryParam("id") int id) {
+    public String getProduct(@ApiParam(value = "产品id， 必填", defaultValue = "1", required = true)  @QueryParam("id") int id,
+                             @ApiParam(value = "用户id 没有传0", defaultValue = "0", required = false) @QueryParam("userId") int userId) {
 
         Product product = productService.getProduct(id);
+        int collection = 0;
 
-        return YouguuJsonHelper.returnJSON("0000", "ok",product);
+        if(userId > 0){
+            collection = userCollectionService.isCollection(userId, UserCollection.TYPE_COM,id);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("code","0000");
+        json.put("message","ok");
+        json.put("result",product);
+        json.put("collection",collection);
+
+
+        return json.toJSONString();
     }
 }
