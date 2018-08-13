@@ -1,9 +1,11 @@
 package com.viewol.web.product.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.viewol.pojo.Company;
 import com.viewol.pojo.Product;
 import com.viewol.pojo.UserBrowse;
 import com.viewol.pojo.UserCollection;
+import com.viewol.service.ICompanyService;
 import com.viewol.service.IProductService;
 import com.viewol.service.IUserBrowseService;
 import com.viewol.service.IUserCollectionService;
@@ -32,6 +34,9 @@ public class ProductAtion {
 
     @Resource
     private IProductService productService;
+
+    @Resource
+    private ICompanyService companyService;
 
     @Resource
     private IUserCollectionService userCollectionService;
@@ -104,6 +109,7 @@ public class ProductAtion {
                              @ApiParam(value = "用户id 没有传0", defaultValue = "0", required = false) @QueryParam("userId") int userId) {
 
         Product product = productService.getProduct(id);
+
         int collection = 0;
 
         if(userId > 0){
@@ -115,6 +121,11 @@ public class ProductAtion {
         json.put("message","ok");
         json.put("result",product);
         json.put("collection",collection);
+
+        if(product!=null){
+            Company c =  companyService.getCompany(product.getCompanyId());
+            json.put("company",c);
+        }
 
         try{
             if(userId>0){

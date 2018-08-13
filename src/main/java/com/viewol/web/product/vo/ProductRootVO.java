@@ -1,5 +1,6 @@
 package com.viewol.web.product.vo;
 
+import com.viewol.web.company.vo.CompanyVO;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -8,6 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
 public class ProductRootVO {
     @ApiModelProperty(value = "产品")
     private ProductVO result;
+
+    @ApiModelProperty(value="展商信息")
+    private CompanyVO company;
 
     @ApiModelProperty(value = "0 未收藏  1 已收藏")
     private int collection;
@@ -26,5 +30,13 @@ public class ProductRootVO {
 
     public void setResult(ProductVO result) {
         this.result = result;
+    }
+
+    public CompanyVO getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyVO company) {
+        this.company = company;
     }
 }
