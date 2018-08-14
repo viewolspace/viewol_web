@@ -123,6 +123,10 @@ public class WxAction {
         LoginResponse rs = new LoginResponse();
 
         try {
+            if(encryptedData == null || ivStr == null || "".equals(encryptedData) || "".equals(ivStr)){
+                return YouguuJsonHelper.returnJSON("0002", "encryptedData不能为空");
+            }
+
             WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(code);
             if (wxMaJscode2Session == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
