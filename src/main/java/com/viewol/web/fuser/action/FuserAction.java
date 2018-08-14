@@ -1,17 +1,26 @@
 package com.viewol.web.fuser.action;
 
+import com.alibaba.fastjson.JSON;
 import com.viewol.pojo.FUser;
 import com.viewol.pojo.UserBrowse;
 import com.viewol.pojo.UserCollection;
 import com.viewol.pojo.UserDownload;
 import com.viewol.service.*;
+import com.viewol.sms.ISmsService;
+import com.viewol.sms.QingSmsServiceImpl;
 import com.viewol.web.common.Response;
 import com.viewol.web.fuser.vo.FUserResponse;
 import com.viewol.web.fuser.vo.UserBrowseResponse;
 import com.viewol.web.fuser.vo.UserCollectionResponse;
 import com.viewol.web.fuser.vo.UserDownloadResponse;
+import com.viewol.web.ucard.util.SecurityCode;
+import com.viewol.web.ucard.util.SecurityImage;
+import com.viewol.web.ucard.vo.ImageRandVO;
+import com.youguu.core.util.RedisUtil;
+import com.youguu.core.util.redis.RedisPool;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
@@ -27,6 +36,10 @@ import java.util.List;
 @Path(value = "fuser")
 @Controller("fuserAction")
 public class FuserAction {
+
+    private static String IMAGE_KRY = "imageCode:%s";
+
+    private static String PHONE_KRY = "phoneCode:%s";
 
     @Resource
     private IFUserService fUserService;
@@ -88,6 +101,57 @@ public class FuserAction {
         }
     }
 
+
+
+    /**
+     * 查询我的基本信息
+     *
+     * @param userId
+     * @return
+     */
+    @GET
+    @Path(value = "/isPerfectnfo")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "是否完善资料", notes = "是否完善资料。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "信息已经完善", response = Response.class),
+            @ApiResponse(code = "0002", message = "信息未完善", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String isPerfectnfo(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId) {
+        try {
+            Response rs = new Response();
+            if(userId<=0){
+                rs.setStatus("0001");
+                rs.setMessage("用户id错误");
+                return rs.toJSONString();
+            }
+
+            FUser fUser = fUserService.getFuser(userId);
+            if(null == fUser){
+                rs.setStatus("0001");
+                rs.setMessage("用户不存在");
+                return rs.toJSONString();
+            }
+
+            if(fUser.getPhone() == null || "".equals(fUser.getPhone())){
+                rs.setStatus("0002");
+                rs.setMessage("信息未完善");
+                return rs.toJSONString();
+            }
+
+            rs.setStatus("0000");
+            rs.setMessage("信息已经完善");
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
     /**
      * 修改个人信息
      *
@@ -108,9 +172,11 @@ public class FuserAction {
             @ApiResponse(code = "0000", message = "修改成功", response = Response.class),
             @ApiResponse(code = "0002", message = "用户不存在", response = Response.class),
             @ApiResponse(code = "0003", message = "修改失败", response = Response.class),
+            @ApiResponse(code = "0004", message = "验证码错误", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String updateUser(@ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+    public String updateUser(@ApiParam(value = "验证码", required = true) @FormParam("rand") String rand,
+                            @ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
                              @ApiParam(value = "手机号", required = true) @FormParam("phone") String phone,
                              @ApiParam(value = "公司", required = true) @FormParam("company") String company,
                              @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
@@ -119,6 +185,20 @@ public class FuserAction {
                              @ApiParam(value = "年龄", required = true) @FormParam("age") int age) {
         try {
             Response rs = new Response();
+
+            RedisPool redis = RedisUtil.getRedisPool("user");
+
+            String phoneKey = String.format(PHONE_KRY, phone);
+
+            String rand_s = redis.get(phoneKey);
+
+            if(rand==null || !rand.equals(rand_s)){
+                rs.setStatus("0004");
+                rs.setMessage("验证码错误");
+                return rs.toJSONString();
+            }
+
+
             FUser fUser = fUserService.getFuser(userId);
             if(null == fUser){
                 rs.setStatus("0002");
@@ -127,6 +207,73 @@ public class FuserAction {
             }
 
             fUser.setPhone(phone);
+            fUser.setCompany(company);
+            fUser.setCompanyId(companyId);
+            fUser.setPosition(position);
+            fUser.setEmail(email);
+            fUser.setAge(age);
+
+            int result = fUserService.updateUser(fUser);
+            if(result>0){
+                rs.setStatus("0000");
+                rs.setMessage("修改成功");
+            } else {
+                rs.setStatus("0003");
+                rs.setMessage("修改失败");
+            }
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
+
+
+    /**
+     * 修改个人信息
+     *
+     * @param userId    用户ID
+     * @param company   公司名称
+     * @param companyId 公司ID
+     * @param position  职位
+     * @param email     邮箱
+     * @param age       年龄
+     * @return
+     */
+    @POST
+    @Path(value = "/updateUserNoPhone")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "修改个人信息(不修改手机号码)", notes = "修改个人信息(不修改手机号码。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "修改成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "用户不存在", response = Response.class),
+            @ApiResponse(code = "0003", message = "修改失败", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String updateUserNoPhone(
+                             @ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "公司", required = true) @FormParam("company") String company,
+                             @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                             @ApiParam(value = "职位", required = true) @FormParam("position") String position,
+                             @ApiParam(value = "邮箱", required = true) @FormParam("email") String email,
+                             @ApiParam(value = "年龄", required = true) @FormParam("age") int age) {
+        try {
+            Response rs = new Response();
+
+
+
+
+            FUser fUser = fUserService.getFuser(userId);
+            if(null == fUser){
+                rs.setStatus("0002");
+                rs.setMessage("用户不存在");
+                return rs.toJSONString();
+            }
+
             fUser.setCompany(company);
             fUser.setCompanyId(companyId);
             fUser.setPosition(position);
@@ -540,5 +687,106 @@ public class FuserAction {
             rs.setMessage("系统异常");
         }
         return rs.toJSONString();
+    }
+
+
+    @GET
+    @Path(value = "/getImgRand")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取验证码之前需要先获取图片验证码", notes = "获取验证码之前需要先获取图片验证码", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "获取成功", response = ImageRandVO.class),
+            @ApiResponse(code = "0101", message = "请先登录", response = ImageRandVO.class),
+            @ApiResponse(code = "0002", message = "系统错误", response = ImageRandVO.class)
+    })
+    public String getImgRand(@ApiParam(value = "用户id", required = true) @QueryParam("userId") int userId){
+        ImageRandVO result = new ImageRandVO();
+        if(userId < 0){
+            result.setStatus("0101");
+            result.setMessage("请先登录");
+            return JSON.toJSONString(result);
+        }
+
+        String securityCode = SecurityCode.getSecurityCode();
+
+
+        byte[] image = SecurityImage.getImageAsInputStream(securityCode.replaceAll("", " "));
+
+        BASE64Encoder encoder = new BASE64Encoder();
+
+        String base64 = encoder.encode(image);
+
+        RedisPool redis = RedisUtil.getRedisPool("user");
+
+        String key = String.format(IMAGE_KRY, userId);
+
+        redis.set(String.format(IMAGE_KRY,userId),securityCode);
+
+        redis.expire(key,300);
+
+        result.setStatus("0000");
+
+        result.setResult(base64);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @GET
+    @Path(value = "/getPhoneRand")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取短信验证码", notes = "获取短信验证码", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "获取成功", response = Response.class),
+            @ApiResponse(code = "0101", message = "请先登录", response = Response.class),
+            @ApiResponse(code = "0002", message = "图片验证码错误，请重新填写", response = Response.class),
+            @ApiResponse(code = "0003", message = "短信发送失败", response = Response.class)
+    })
+    public String getPhoneRand(@ApiParam(value = "用户id", required = true) @QueryParam("userId") int userId,
+                               @ApiParam(value = "图片验证码", required = true) @QueryParam("imgRand") String imgRand,
+                               @ApiParam(value = "手机号码", required = true) @QueryParam("phone") String phone){
+        Response result = new Response();
+        if(userId < 0){
+            result.setStatus("0101");
+            result.setMessage("请先登录");
+            return JSON.toJSONString(result);
+        }
+
+
+
+        RedisPool redis = RedisUtil.getRedisPool("user");
+
+        String key = String.format(IMAGE_KRY, userId);
+
+        String imgRand_s = redis.get(key);
+
+        redis.del(key);
+
+        if(imgRand==null || !imgRand.equals(imgRand_s)){
+            result.setStatus("0002");
+            result.setMessage("图片验证码错误，请重新填写");
+            return JSON.toJSONString(result);
+        }
+
+        String securityCode = SecurityCode.getSimpleSecurityCode();
+
+        String phoneKey = String.format(PHONE_KRY, phone);
+
+        redis.set(phoneKey,securityCode);
+
+        redis.expire(key,300);
+
+        ISmsService smsService = new QingSmsServiceImpl();
+
+        int res = smsService.sendRand(phone,securityCode);
+
+        if(res<=0){
+            result.setStatus("0003");
+            result.setMessage("短信发送失败");
+            return JSON.toJSONString(result);
+        }
+        result.setStatus("0000");
+
+        return JSON.toJSONString(result);
     }
 }
