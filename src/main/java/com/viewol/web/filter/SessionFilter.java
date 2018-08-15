@@ -36,8 +36,8 @@ public class SessionFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
 
         HttpServletResponse response = (HttpServletResponse) rep;
-        response.setHeader("Content-type", "text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-type", "text/html;charset=UTF-8");
 
         //不须加解密
         int userId = request.getIntHeader(HEADER_NAME_USER_ID);
