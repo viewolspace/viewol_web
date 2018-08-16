@@ -157,8 +157,8 @@ public class ScheduleAction {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String listSchedule(@ApiParam(value = "格式 yyyy-MM-dd HH:mm:ss 表示查询此时间正在进行的活动 ") @QueryParam("time") String time,
-                               @ApiParam(value = "格式 yyyy-MM-dd 此字段用于日历点击使用  筛选的时候不需要此字段") @QueryParam("date") String date,
+    public String listSchedule(@ApiParam(value = "格式 HH:mm 表示查询此时间正在进行的活动 配合date使用 ") @QueryParam("time") String time,
+                               @ApiParam(value = "格式 yyyy-MM-dd 此字段用于日历点击使用  ") @QueryParam("date") String date,
                                @ApiParam(value = "发布人类型，-1全部;0-主办方；1-展商; ") @QueryParam("type") int type,
                                @ApiParam(value = "关键词（可匹配主题和展商名称）") @QueryParam("keyword") String keyword,
                                @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
