@@ -76,6 +76,8 @@ dependencies {
     /** Redis **/
     compile 'redis.clients:jedis:2.2.1'
 
+    compile 'javax.mail:mail:1.4.7'
+
     /** jackson */
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.9'
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.9'
