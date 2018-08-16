@@ -53,7 +53,7 @@ public class ScanCardAction {
         InputStream is = null;
         ByteArrayOutputStream os = null;
         ByteArrayInputStream bis = null;
-        JSONObject json = null;
+        JSONObject json = new JSONObject();
         try {
 
             List<InputPart> list=input.getFormDataMap().get("img");
