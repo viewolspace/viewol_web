@@ -5,10 +5,10 @@ import com.viewol.pojo.Company;
 import com.viewol.pojo.Product;
 import com.viewol.pojo.UserBrowse;
 import com.viewol.pojo.UserCollection;
-import com.viewol.service.ICompanyService;
-import com.viewol.service.IProductService;
-import com.viewol.service.IUserBrowseService;
-import com.viewol.service.IUserCollectionService;
+import com.viewol.service.*;
+import com.viewol.util.Base64Img;
+import com.viewol.web.common.Response;
+import com.viewol.web.company.vo.ErCodeResponse;
 import com.viewol.web.product.vo.ProductModuleVO;
 import com.viewol.web.product.vo.ProductRootVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
@@ -16,10 +16,8 @@ import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
+import java.io.File;
 import java.util.List;
 
 @SwaggerDefinition(
@@ -43,6 +41,8 @@ public class ProductAtion {
 
     @Resource
     private IUserBrowseService userBrowseService;
+    @Resource
+    private IWxService wxService;
 
     /**
      * 推荐产品查询，共12个
@@ -136,5 +136,35 @@ public class ProductAtion {
             e.printStackTrace();
         }
         return json.toJSONString();
+    }
+
+    @POST
+    @Path(value = "/getProductMaErCode")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取产品主页的小程序码", notes = "扫一扫该二维码跳转到产品的小程序主页，scene格式:a=1&c=123&p=43。a是type,c是展商ID,p是产品ID", author = "更新于 2018-08-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "成功", response = ErCodeResponse.class),
+            @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String getProductMaErCode(@ApiParam(value = "type，1-代表交换名片") @FormParam("type") int type,
+                                     @ApiParam(value = "产品ID", required = true) @FormParam("productId") int productId,
+                                     @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId) {
+
+        ErCodeResponse rs = new ErCodeResponse();
+
+        File file = wxService.createProductWxaCode(type, companyId, productId, "pages/company/index");
+
+        String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+        if(file!=null){
+            rs.setStatus("0000");
+            rs.setMessage("成功");
+            rs.setErcode(base64Str);
+        } else {
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+        }
+
+        return rs.toJSONString();
     }
 }

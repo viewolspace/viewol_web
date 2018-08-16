@@ -8,17 +8,19 @@ import com.viewol.pojo.UserCollection;
 import com.viewol.service.ICompanyService;
 import com.viewol.service.IUserBrowseService;
 import com.viewol.service.IUserCollectionService;
+import com.viewol.service.IWxService;
+import com.viewol.util.Base64Img;
+import com.viewol.web.common.Response;
 import com.viewol.web.company.vo.CompanyListVO;
 import com.viewol.web.company.vo.CompanyModuleVO;
+import com.viewol.web.company.vo.ErCodeResponse;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
+import java.io.File;
 import java.util.List;
 
 @SwaggerDefinition(
@@ -39,6 +41,8 @@ public class CompanyAtion {
 
     @Resource
     private IUserBrowseService userBrowseService;
+    @Resource
+    private IWxService wxService;
     /**
      * 推荐展商查询，共12个
      * @return
@@ -133,4 +137,34 @@ public class CompanyAtion {
         return json.toJSONString();
     }
 
+
+    @POST
+    @Path(value = "/getCompanyMaErCode")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取展商/业务员的小程序码", notes = "扫一扫该二维码跳转到展商的小程序主页，scene格式:a=1&c=123&u=12。a是type,c是展商ID,u是业务员ID", author = "更新于 2018-08-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "成功", response = ErCodeResponse.class),
+            @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String getCompanyMaErCode(@ApiParam(value = "type，1-代表交换名片", required = true) @FormParam("type") int type,
+                              @ApiParam(value = "业务员ID", required = true) @FormParam("fUserId") int fUserId,
+                              @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId) {
+
+        ErCodeResponse rs = new ErCodeResponse();
+
+        File file = wxService.createCompanyWxaCode(type, companyId, fUserId, "pages/company/index");
+
+        String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+        if(file!=null){
+            rs.setStatus("0000");
+            rs.setMessage("成功");
+            rs.setErcode(base64Str);
+        } else {
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+        }
+
+        return rs.toJSONString();
+    }
 }
