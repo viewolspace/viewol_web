@@ -153,17 +153,24 @@ public class CompanyAtion {
 
         ErCodeResponse rs = new ErCodeResponse();
 
-        File file = wxService.createCompanyWxaCode(type, companyId, fUserId, "pages/company/index");
+        try{
+            File file = wxService.createCompanyWxaCode(type, companyId, fUserId, "pages/company/index");
 
-        String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
-        if(file!=null){
-            rs.setStatus("0000");
-            rs.setMessage("成功");
-            rs.setErcode(base64Str);
-        } else {
+            String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+            if(file!=null){
+                rs.setStatus("0000");
+                rs.setMessage("成功");
+                rs.setErcode(base64Str);
+            } else {
+                rs.setStatus("0001");
+                rs.setMessage("系统异常");
+            }
+        } catch (Exception e){
             rs.setStatus("0001");
             rs.setMessage("系统异常");
+            e.printStackTrace();
         }
+
 
         return rs.toJSONString();
     }
