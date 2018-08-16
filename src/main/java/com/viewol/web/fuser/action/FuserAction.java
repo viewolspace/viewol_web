@@ -1,13 +1,11 @@
 package com.viewol.web.fuser.action;
 
 import com.alibaba.fastjson.JSON;
-import com.viewol.pojo.FUser;
-import com.viewol.pojo.UserBrowse;
-import com.viewol.pojo.UserCollection;
-import com.viewol.pojo.UserDownload;
+import com.viewol.pojo.*;
 import com.viewol.service.*;
 import com.viewol.sms.ISmsService;
 import com.viewol.sms.QingSmsServiceImpl;
+import com.viewol.util.EmailUtil;
 import com.viewol.web.common.Response;
 import com.viewol.web.fuser.vo.FUserResponse;
 import com.viewol.web.fuser.vo.UserBrowseResponse;
@@ -693,7 +691,21 @@ public class FuserAction {
                 rs.setStatus("0002");
                 rs.setMessage("请先设置邮箱");
             }else{
-                //TODO 将pdf文件发送到邮箱
+                if(ids==null || "".equals(ids)){
+                    rs.setStatus("0003");
+                    rs.setMessage("请选择需要发送的说明书");
+                }else{
+                    String[] idsSplit = ids.split(",");
+                    List<Integer> list = new ArrayList<>();
+                    for(String id:idsSplit){
+                        list.add(Integer.parseInt(id));
+                    }
+                    List<Product> products = productService.listProductByIds(list);
+                    String content = this.getContent(products);
+                    EmailUtil.sendMail(fUser.getEmail(),content);
+                    rs.setStatus("000");
+                    rs.setMessage("邮件已发送,请登录邮箱查看");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -702,6 +714,18 @@ public class FuserAction {
             rs.setMessage("系统异常");
         }
         return rs.toJSONString();
+    }
+
+
+    private String getContent(List<Product> products){
+        StringBuilder sb = new StringBuilder("");
+        for(Product product:products){
+            if(product.getPdfUrl()!=null && !"".equals(product.getPdfUrl())){
+                sb.append("<b>").append(product.getName()).append("</b>").append("<a href=\""+product.getPdfUrlView()+"\">查看说明书</a>");
+            }
+        }
+        return sb.toString();
+
     }
 
 
