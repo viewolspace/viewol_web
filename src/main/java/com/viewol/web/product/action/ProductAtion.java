@@ -153,7 +153,7 @@ public class ProductAtion {
 
         ErCodeResponse rs = new ErCodeResponse();
 
-        File file = wxService.createProductWxaCode(type, companyId, productId, "pages/company/index");
+        File file = wxService.createProductWxaCode(type, companyId, productId, "pages/product/info");
 
         String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
         if(file!=null){
