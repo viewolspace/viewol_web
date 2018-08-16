@@ -176,10 +176,11 @@ public class FuserAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String updateUser(@ApiParam(value = "验证码", required = true) @FormParam("rand") String rand,
-                            @ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "客户姓名", required = true) @FormParam("userName") String userName,
                              @ApiParam(value = "手机号", required = true) @FormParam("phone") String phone,
                              @ApiParam(value = "公司", required = true) @FormParam("company") String company,
-                             @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                             @ApiParam(value = "邀请展商ID") @FormParam("companyId") int companyId,
                              @ApiParam(value = "职位", required = true) @FormParam("position") String position,
                              @ApiParam(value = "邮箱", required = true) @FormParam("email") String email,
                              @ApiParam(value = "年龄", required = true) @FormParam("age") int age) {
@@ -206,9 +207,13 @@ public class FuserAction {
                 return rs.toJSONString();
             }
 
+            fUser.setUserName(userName);
             fUser.setPhone(phone);
             fUser.setCompany(company);
-            fUser.setCompanyId(companyId);
+            if(companyId>0){
+                fUser.setCompanyId(companyId);
+            }
+
             fUser.setPosition(position);
             fUser.setEmail(email);
             fUser.setAge(age);
@@ -256,8 +261,9 @@ public class FuserAction {
     })
     public String updateUserNoPhone(
                              @ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "客户姓名", required = true) @FormParam("userName") String userName,
                              @ApiParam(value = "公司", required = true) @FormParam("company") String company,
-                             @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                             @ApiParam(value = "邀请展商ID") @FormParam("companyId") int companyId,
                              @ApiParam(value = "职位", required = true) @FormParam("position") String position,
                              @ApiParam(value = "邮箱", required = true) @FormParam("email") String email,
                              @ApiParam(value = "年龄", required = true) @FormParam("age") int age) {
@@ -274,8 +280,12 @@ public class FuserAction {
                 return rs.toJSONString();
             }
 
+            fUser.setUserName(userName);
             fUser.setCompany(company);
-            fUser.setCompanyId(companyId);
+            if(companyId>0){
+                fUser.setCompanyId(companyId);
+            }
+
             fUser.setPosition(position);
             fUser.setEmail(email);
             fUser.setAge(age);
@@ -322,8 +332,9 @@ public class FuserAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String addFUser(@ApiParam(value = "手机号", required = true) @FormParam("phone") String phone,
+                           @ApiParam(value = "客户姓名", required = true) @FormParam("userName") String userName,
                            @ApiParam(value = "公司", required = true) @FormParam("company") String company,
-                           @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                           @ApiParam(value = "邀请展商ID") @FormParam("companyId") int companyId,
                            @ApiParam(value = "职位", required = true) @FormParam("position") String position,
                            @ApiParam(value = "邮箱", required = true) @FormParam("email") String email,
                            @ApiParam(value = "年龄", required = true) @FormParam("age") int age,
@@ -338,9 +349,13 @@ public class FuserAction {
             Response rs = new Response();
             FUser fUser = new FUser();
 
+            fUser.setUserName(userName);
             fUser.setPhone(phone);
             fUser.setCompany(company);
-            fUser.setCompanyId(companyId);
+            if(companyId>0){
+                fUser.setCompanyId(companyId);
+            }
+
             fUser.setPosition(position);
             fUser.setEmail(email);
             fUser.setAge(age);
