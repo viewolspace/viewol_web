@@ -100,7 +100,7 @@ public class ScanCardAction {
 
                 IScanCard sc1 = new ScanTestXY();
                 json = sc1.scan(map);
-                System.out.println("xy:" + sc1.scan(map));
+//                System.out.println("xy:" + sc1.scan(map));
 
 
 //                //判断图片大小
