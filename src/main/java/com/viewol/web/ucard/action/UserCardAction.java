@@ -46,6 +46,7 @@ public class UserCardAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String ucardList(@ApiParam(value = "展商ID", required = true) @QueryParam("companyId") int companyId,
+                            @ApiParam(value = "业务员ID", required = true) @QueryParam("userId") int userId,
                             @ApiParam(value = "最后一条记录ID，分页用", required = true) @QueryParam("lastId") int lastId,
                             @ApiParam(value = "每次返回记录数", required = true) @QueryParam("pageSize") int pageSize) {
         try {
@@ -53,6 +54,7 @@ public class UserCardAction {
             query.setCompanyId(companyId);
             query.setLastId(lastId);
             query.setPageSize(pageSize);
+            query.setbUserId(userId);
             List<UserCardVO> list = userCardService.listUserCard(query);
 
             UserCardResponse rs = new UserCardResponse();
