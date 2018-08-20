@@ -42,7 +42,7 @@ public class InfoAction {
             List<Info> list =  infoService.listInfo(lastSeq, pageSize);
             if(list!=null && list.size()>0){
                 rs.setStatus("0000");
-                rs.setMessage("暂无数据");
+                rs.setMessage("ok");
                 List<InfoResponse.InfoVO> result = new ArrayList<>();
                 for(Info info : list){
                     InfoResponse.InfoVO infoVO = rs.new InfoVO();
