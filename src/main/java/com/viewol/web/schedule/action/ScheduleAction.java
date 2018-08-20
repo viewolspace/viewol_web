@@ -185,6 +185,7 @@ public class ScheduleAction {
                 vo.setCompanyName(schedule.getCompanyName());
                 vo.setCreateTime(schedule.getsTime());
                 vo.setSeq(schedule.getSeq());
+                vo.setStatus(schedule.getStatus());
                 voList.add(vo);
             }
 

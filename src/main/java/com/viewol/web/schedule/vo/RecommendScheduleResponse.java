@@ -53,6 +53,9 @@ public class RecommendScheduleResponse extends Response {
 		@ApiModelProperty(value = "序列号")
 		private long seq;
 
+		@ApiModelProperty(value = "审核状态：1-审核通过；0-审核中；-1-打回")
+		private int status;
+
 		public Integer getId() {
 			return id;
 		}
@@ -99,6 +102,14 @@ public class RecommendScheduleResponse extends Response {
 
 		public void setSeq(long seq) {
 			this.seq = seq;
+		}
+
+		public int getStatus() {
+			return status;
+		}
+
+		public void setStatus(int status) {
+			this.status = status;
 		}
 	}
 }
