@@ -1,7 +1,9 @@
 package com.viewol.web.ucard.action;
 
+import com.viewol.pojo.BUser;
 import com.viewol.pojo.UserCardVO;
 import com.viewol.pojo.query.UserCardQuery;
+import com.viewol.service.IBUserService;
 import com.viewol.service.IUserCardService;
 import com.viewol.web.common.Response;
 import com.viewol.web.ucard.vo.UserCardResponse;
@@ -29,6 +31,9 @@ public class UserCardAction {
 
     @Resource
     private IUserCardService userCardService;
+
+    @Resource
+    private IBUserService userService;
 
 
 
@@ -194,9 +199,19 @@ public class UserCardAction {
     public String changeCard(@ApiParam(value = "展商ID", required = true) @QueryParam("companyId") int companyId,
                             @ApiParam(value = "用户id", required = true) @QueryParam("userId") int userId,
                             @ApiParam(value = "业务员id ， 扫码传递", required = true) @QueryParam("bUserId") int bUserId) {
-        if(userId <=0 || bUserId<=0){
+        if(userId <= 0){
             return YouguuJsonHelper.returnJSON("0002","参数错误");
         }
+
+        if(bUserId<=0){//查询第一个业务员
+            List<BUser> list = userService.listByCom(companyId);
+            if(list==null || list.size()==0){
+                return YouguuJsonHelper.returnJSON("0002","该展商目前没有业务员");
+            }
+
+            bUserId = list.get(0).getUserId();
+        }
+
         UserCardQuery query = new UserCardQuery();
         query.setfUserId(userId);
         query.setCompanyId(companyId);
