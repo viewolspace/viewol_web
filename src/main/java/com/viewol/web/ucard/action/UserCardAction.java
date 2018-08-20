@@ -167,7 +167,7 @@ public class UserCardAction {
                 vo.setBPosition(userCardVO.getBPosition());
 
                 //展商基本信息
-                vo.setLogo(userCardVO.getLogo());
+                vo.setLogo(userCardVO.getLogoView());
                 vo.setName(userCardVO.getName());
                 vo.setShortName(userCardVO.getShortName());
                 voList.add(vo);
