@@ -113,7 +113,7 @@ public class ProductAtion {
         int collection = 0;
 
         if(userId > 0){
-            collection = userCollectionService.isCollection(userId, UserCollection.TYPE_COM,id);
+            collection = userCollectionService.isCollection(userId, UserCollection.TYPE_PRODUCT,id);
         }
 
         JSONObject json = new JSONObject();
