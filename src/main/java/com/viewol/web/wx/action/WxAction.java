@@ -2,6 +2,7 @@ package com.viewol.web.wx.action;
 
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.BUser;
 import com.viewol.pojo.FUser;
 import com.viewol.pojo.FUserBind;
@@ -11,12 +12,13 @@ import com.viewol.service.IFUserService;
 import com.viewol.service.IUserSessionService;
 import com.viewol.service.IWxService;
 import com.viewol.web.common.Response;
-import com.viewol.web.ucard.vo.UserCardResponse;
 import com.viewol.web.wx.vo.BuserLoginResponse;
 import com.viewol.web.wx.vo.FollowResponse;
 import com.viewol.web.wx.vo.LoginResponse;
+import com.viewol.web.wx.vo.WxJsapiSignatureVO;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
+import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.stereotype.Controller;
@@ -391,5 +393,25 @@ public class WxAction {
         }
 
         return rs.toJSONString();
+    }
+
+
+
+
+    @GET
+    @Path(value = "/jsapiSignature")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "创建调用jsapi时所需要的签名", notes = "", author = "更新于 2018-07-23")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "查询成功", response = WxJsapiSignatureVO.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = WxJsapiSignatureVO.class)
+    })
+    public String jsapiSignature(@ApiParam(value = "url", required = true) @QueryParam("url") String url) {
+        JSONObject json = new JSONObject();
+        json.put("status","0000");
+        json.put("message","ok");
+        WxJsapiSignature wxJsapiSignature = wxService.createJsapiSignature(url);
+        json.put("result",wxJsapiSignature);
+        return json.toJSONString();
     }
 }
