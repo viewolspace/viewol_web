@@ -11,6 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,12 +45,13 @@ public class InfoAction {
                 rs.setStatus("0000");
                 rs.setMessage("ok");
                 List<InfoResponse.InfoVO> result = new ArrayList<>();
+                SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
                 for(Info info : list){
                     InfoResponse.InfoVO infoVO = rs.new InfoVO();
                     infoVO.setId(info.getId());
                     infoVO.setTitle(info.getTitle());
                     infoVO.setSummary(info.getSummary());
-                    infoVO.setPubTime(info.getPubTime());
+                    infoVO.setPubTime(dft.format(info.getPubTime()));
                     infoVO.setPicUrl(info.getPicUrl());
                     infoVO.setContentUrl(info.getContentUrl());
 

@@ -44,7 +44,7 @@ public class InfoResponse extends Response {
         private String summary;
 
         @ApiModelProperty(value = "发布日期")
-        private Date pubTime;
+        private String pubTime;
 
         @ApiModelProperty(value = "图片地址")
         private String picUrl;
@@ -76,11 +76,11 @@ public class InfoResponse extends Response {
             this.summary = summary;
         }
 
-        public Date getPubTime() {
+        public String getPubTime() {
             return pubTime;
         }
 
-        public void setPubTime(Date pubTime) {
+        public void setPubTime(String pubTime) {
             this.pubTime = pubTime;
         }
 
