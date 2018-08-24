@@ -135,8 +135,7 @@ public class ScanCardAction {
 
     @POST
     @Path(value = "/scanCardBase64")
-    @Consumes({MediaType.MULTIPART_FORM_DATA})
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "扫描身份证信息", notes = "扫描身份证信息",
             author = "更新于 2018-07-16"  )
     @ApiResponses(value = {
@@ -154,6 +153,10 @@ public class ScanCardAction {
 
             BASE64Decoder decoder = new BASE64Decoder();
             try {
+                if(imgStr.indexOf(",") >= 0){
+                    imgStr = imgStr.substring(imgStr.indexOf(",")+1);
+                }
+
                 // Base64解码
                 fileByte = decoder.decodeBuffer(imgStr);
             } catch (Exception e) {
