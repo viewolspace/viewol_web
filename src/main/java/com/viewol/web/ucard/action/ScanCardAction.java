@@ -81,17 +81,15 @@ public class ScanCardAction {
                 if(w > h && w > 960){ //正常的横屏
 
                     Thumbnails.of(bis).size(960, 600).toOutputStream(os);
-
-                    System.out.println(os.toByteArray().length);
+                    fileByte = os.toByteArray();
 
                 }else if( h > w && h > 960){
                     Thumbnails.of(bis).size(w/(h/960), 960).toOutputStream(os);
-
-                    System.out.println(os.toByteArray().length);
+                    fileByte = os.toByteArray();
                 }
 
                 BASE64Encoder encoder = new BASE64Encoder();
-                String base64 = encoder.encode(os.toByteArray());
+                String base64 = encoder.encode(fileByte);
                 Map<String,String> map = new HashMap<>();
                 map.put("base64",base64);
 
