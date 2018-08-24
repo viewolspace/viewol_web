@@ -3,7 +3,9 @@ package com.viewol.web.info.action;
 import com.viewol.pojo.Info;
 import com.viewol.service.IInfoService;
 import com.viewol.web.info.vo.InfoResponse;
+import com.youguu.core.util.PropertiesUtil;
 import io.swagger.annotations.*;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -11,9 +13,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import java.io.File;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @SwaggerDefinition(
         tags = {
@@ -46,6 +51,9 @@ public class InfoAction {
                 rs.setMessage("ok");
                 List<InfoResponse.InfoVO> result = new ArrayList<>();
                 SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+
+                Properties properties = PropertiesUtil.getProperties("properties/config.properties");
+                String prefix = properties.getProperty("info.visit.url");
                 for(Info info : list){
                     InfoResponse.InfoVO infoVO = rs.new InfoVO();
                     infoVO.setId(info.getId());
@@ -53,7 +61,7 @@ public class InfoAction {
                     infoVO.setSummary(info.getSummary());
                     infoVO.setPubTime(dft.format(info.getPubTime()));
                     infoVO.setPicUrl(info.getPicUrl());
-                    infoVO.setContentUrl(info.getContentUrl());
+                    infoVO.setContentUrl(prefix + File.separator + info.getContentUrl());
 
                     result.add(infoVO);
                 }
