@@ -5,7 +5,6 @@ import com.viewol.service.IInfoService;
 import com.viewol.web.info.vo.InfoResponse;
 import com.youguu.core.util.PropertiesUtil;
 import io.swagger.annotations.*;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -14,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import java.io.File;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;

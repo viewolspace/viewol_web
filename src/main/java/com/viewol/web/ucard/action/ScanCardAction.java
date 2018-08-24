@@ -3,6 +3,8 @@ package com.viewol.web.ucard.action;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.cardscan.IScanCard;
 import com.viewol.cardscan.ScanTestXY;
+import com.youguu.core.logging.Log;
+import com.youguu.core.logging.LogFactory;
 import io.swagger.annotations.*;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
@@ -31,38 +33,42 @@ import java.util.Map;
  */
 @SwaggerDefinition(
         tags = {
-                @Tag(name="v1.0",description="扫描名片")
+                @Tag(name = "v1.0", description = "扫描名片")
         }
 )
 @Api(value = "scanCardAction")
 @Path(value = "scanCard")
 @Controller("scanCardAction")
 public class ScanCardAction {
+
+    private static final Log logger = LogFactory.getLog(ScanCardAction.class);
+
     @POST
     @Path(value = "/scanCard")
     @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "扫描身份证信息", notes = "扫描身份证信息",
-            author = "更新于 2018-07-16"  )
+            author = "更新于 2018-07-16")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功"),
 
     })
-
-    public String scanCard(  MultipartFormDataInput input ){
+    public String scanCard(MultipartFormDataInput input) {
+        logger.debug("scanCard start");
         InputStream is = null;
         ByteArrayOutputStream os = null;
         ByteArrayInputStream bis = null;
         JSONObject json = new JSONObject();
         try {
-
-            List<InputPart> list=input.getFormDataMap().get("img");
-            if(list!=null&&list.size()>0){
+            List<InputPart> list = input.getFormDataMap().get("img");
+            logger.debug("File list size = " + list.size());
+            if (list != null && list.size() > 0) {
                 InputPart part = list.get(0);
-                is=part.getBody(InputStream.class,null);
+                logger.debug("header: "+part.getHeaders().toString());
+                is = part.getBody(InputStream.class, null);
                 byte[] fileByte = IOUtils.toByteArray(is);
 
-                bis= new ByteArrayInputStream(fileByte);
+                bis = new ByteArrayInputStream(fileByte);
                 bis.mark(0);
                 BufferedImage bi = ImageIO.read(bis);
 
@@ -70,30 +76,31 @@ public class ScanCardAction {
 
                 int w = bi.getWidth();
 
-                os=new ByteArrayOutputStream();
+                os = new ByteArrayOutputStream();
 
-                System.out.println("宽度：" + w + " 高度："+h);
+                logger.debug("宽度：" + w + " 高度：" + h);
 
                 //
 
                 bis.reset();
 
-                if(w > h && w > 960){ //正常的横屏
+                if (w > h && w > 960) { //正常的横屏
 
                     Thumbnails.of(bis).size(960, 600).toOutputStream(os);
 
                     System.out.println(os.toByteArray().length);
 
-                }else if( h > w && h > 960){
-                    Thumbnails.of(bis).size(w/(h/960), 960).toOutputStream(os);
+                } else if (h > w && h > 960) {
+                    Thumbnails.of(bis).size(w / (h / 960), 960).toOutputStream(os);
 
                     System.out.println(os.toByteArray().length);
                 }
 
                 BASE64Encoder encoder = new BASE64Encoder();
                 String base64 = encoder.encode(os.toByteArray());
-                Map<String,String> map = new HashMap<>();
-                map.put("base64",base64);
+                Map<String, String> map = new HashMap<>();
+                map.put("base64", base64);
+                logger.debug("base64: "+base64);
 
 //                IScanCard sc = new ScanTestHW();
 //                System.out.println("hw:" + sc.scan(map));
@@ -123,17 +130,34 @@ public class ScanCardAction {
 
         } catch (Exception e) {
             json = new JSONObject();
-            json.put("status","0001");
+            json.put("status", "0001");
             e.printStackTrace();
-        }finally {
-            if(is!=null){ try {is.close();} catch (IOException e) {e.printStackTrace();}}
-            if(os!=null){ try {os.close();} catch (IOException e) {e.printStackTrace();}}
-            if(bis!=null){ try {bis.close();} catch (IOException e) {e.printStackTrace();}}
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return json.toJSONString();
     }
-
 
 
 }
