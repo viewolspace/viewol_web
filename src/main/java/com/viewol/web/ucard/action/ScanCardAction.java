@@ -150,7 +150,6 @@ public class ScanCardAction {
         JSONObject json = new JSONObject();
         byte[] fileByte = null;
         try {
-
             BASE64Decoder decoder = new BASE64Decoder();
             try {
                 if(imgStr.indexOf(",") >= 0){
