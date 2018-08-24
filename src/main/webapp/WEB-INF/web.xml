@@ -36,16 +36,16 @@
         <param-value>com.viewol.web.swagger.RestApplication</param-value>
     </context-param>
 
-    <filter>
-        <description>权限过滤器</description>
-        <filter-name>SessionFilter</filter-name>
-        <filter-class>com.viewol.web.filter.SessionFilter</filter-class>
-    </filter>
+    <!--<filter>-->
+        <!--<description>权限过滤器</description>-->
+        <!--<filter-name>SessionFilter</filter-name>-->
+        <!--<filter-class>com.viewol.web.filter.SessionFilter</filter-class>-->
+    <!--</filter>-->
 
-    <filter-mapping>
-        <filter-name>SessionFilter</filter-name>
-        <url-pattern>/fuser/getImgRand/*</url-pattern>
-    </filter-mapping>
+    <!--<filter-mapping>-->
+        <!--<filter-name>SessionFilter</filter-name>-->
+        <!--<url-pattern>/fuser/getImgRand/*</url-pattern>-->
+    <!--</filter-mapping>-->
 
     <filter>
         <description>字符集过滤器</description>
