@@ -3,21 +3,17 @@ package com.viewol.web.ucard.action;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.cardscan.IScanCard;
 import com.viewol.cardscan.ScanTestXY;
-import com.youguu.core.logging.Log;
-import com.youguu.core.logging.LogFactory;
 import io.swagger.annotations.*;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.springframework.stereotype.Controller;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -33,42 +29,38 @@ import java.util.Map;
  */
 @SwaggerDefinition(
         tags = {
-                @Tag(name = "v1.0", description = "扫描名片")
+                @Tag(name="v1.0",description="扫描名片")
         }
 )
 @Api(value = "scanCardAction")
 @Path(value = "scanCard")
 @Controller("scanCardAction")
 public class ScanCardAction {
-
-    private static final Log logger = LogFactory.getLog(ScanCardAction.class);
-
     @POST
     @Path(value = "/scanCard")
     @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "扫描身份证信息", notes = "扫描身份证信息",
-            author = "更新于 2018-07-16")
+            author = "更新于 2018-07-16"  )
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功"),
 
     })
-    public String scanCard(MultipartFormDataInput input) {
-        logger.debug("scanCard start");
+
+    public String scanCard(  MultipartFormDataInput input ){
         InputStream is = null;
         ByteArrayOutputStream os = null;
         ByteArrayInputStream bis = null;
         JSONObject json = new JSONObject();
         try {
-            List<InputPart> list = input.getFormDataMap().get("img");
-            logger.debug("File list size = " + list.size());
-            if (list != null && list.size() > 0) {
+
+            List<InputPart> list=input.getFormDataMap().get("img");
+            if(list!=null&&list.size()>0){
                 InputPart part = list.get(0);
-                logger.debug("header: "+part.getHeaders().toString());
-                is = part.getBody(InputStream.class, null);
+                is=part.getBody(InputStream.class,null);
                 byte[] fileByte = IOUtils.toByteArray(is);
 
-                bis = new ByteArrayInputStream(fileByte);
+                bis= new ByteArrayInputStream(fileByte);
                 bis.mark(0);
                 BufferedImage bi = ImageIO.read(bis);
 
@@ -76,31 +68,28 @@ public class ScanCardAction {
 
                 int w = bi.getWidth();
 
-                os = new ByteArrayOutputStream();
+                os=new ByteArrayOutputStream();
 
-                logger.debug("宽度：" + w + " 高度：" + h);
+                System.out.println("宽度：" + w + " 高度："+h);
 
                 //
 
                 bis.reset();
 
-                if (w > h && w > 960) { //正常的横屏
+                if(w > h && w > 960){ //正常的横屏
 
                     Thumbnails.of(bis).size(960, 600).toOutputStream(os);
+                    fileByte = os.toByteArray();
 
-                    System.out.println(os.toByteArray().length);
-
-                } else if (h > w && h > 960) {
-                    Thumbnails.of(bis).size(w / (h / 960), 960).toOutputStream(os);
-
-                    System.out.println(os.toByteArray().length);
+                }else if( h > w && h > 960){
+                    Thumbnails.of(bis).size(w/(h/960), 960).toOutputStream(os);
+                    fileByte = os.toByteArray();
                 }
 
                 BASE64Encoder encoder = new BASE64Encoder();
-                String base64 = encoder.encode(os.toByteArray());
-                Map<String, String> map = new HashMap<>();
-                map.put("base64", base64);
-                logger.debug("base64: "+base64);
+                String base64 = encoder.encode(fileByte);
+                Map<String,String> map = new HashMap<>();
+                map.put("base64",base64);
 
 //                IScanCard sc = new ScanTestHW();
 //                System.out.println("hw:" + sc.scan(map));
@@ -130,30 +119,93 @@ public class ScanCardAction {
 
         } catch (Exception e) {
             json = new JSONObject();
-            json.put("status", "0001");
+            json.put("status","0001");
             e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        }finally {
+            if(is!=null){ try {is.close();} catch (IOException e) {e.printStackTrace();}}
+            if(os!=null){ try {os.close();} catch (IOException e) {e.printStackTrace();}}
+            if(bis!=null){ try {bis.close();} catch (IOException e) {e.printStackTrace();}}
+        }
+
+        return json.toJSONString();
+    }
+
+
+
+
+    @POST
+    @Path(value = "/scanCardBase64")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "扫描身份证信息", notes = "扫描身份证信息",
+            author = "更新于 2018-07-16"  )
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功"),
+
+    })
+
+    public String scanCardBase64(@ApiParam(value = "图片base64", required = true) @FormParam("imgStr") String imgStr){
+        InputStream is = null;
+        ByteArrayOutputStream os = null;
+        ByteArrayInputStream bis = null;
+        JSONObject json = new JSONObject();
+        byte[] fileByte = null;
+        try {
+            BASE64Decoder decoder = new BASE64Decoder();
+            try {
+                if(imgStr.indexOf(",") >= 0){
+                    imgStr = imgStr.substring(imgStr.indexOf(",")+1);
                 }
+
+                // Base64解码
+                fileByte = decoder.decodeBuffer(imgStr);
+            } catch (Exception e) {
+                e.printStackTrace();
+                json.put("status","0001");
+                json.put("message","base64编码错误");
+                return json.toJSONString();
             }
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+            bis= new ByteArrayInputStream(fileByte);
+            bis.mark(0);
+            BufferedImage bi = ImageIO.read(bis);
+
+            int h = bi.getHeight();
+
+            int w = bi.getWidth();
+
+            os=new ByteArrayOutputStream();
+
+            System.out.println("宽度：" + w + " 高度："+h);
+
+            bis.reset();
+
+            if(w > h && w > 960){ //正常的横屏
+
+                Thumbnails.of(bis).size(960, 600).toOutputStream(os);
+                fileByte = os.toByteArray();
+
+            }else if( h > w && h > 960){
+                Thumbnails.of(bis).size(w/(h/960), 960).toOutputStream(os);
+                fileByte = os.toByteArray();
             }
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+
+            BASE64Encoder encoder = new BASE64Encoder();
+            String base64 = encoder.encode(fileByte);
+            Map<String,String> map = new HashMap<>();
+            map.put("base64",base64);
+
+
+            IScanCard sc1 = new ScanTestXY();
+            json = sc1.scan(map);
+
+        } catch (Exception e) {
+            json = new JSONObject();
+            json.put("status","0001");
+            e.printStackTrace();
+        }finally {
+            if(is!=null){ try {is.close();} catch (IOException e) {e.printStackTrace();}}
+            if(os!=null){ try {os.close();} catch (IOException e) {e.printStackTrace();}}
+            if(bis!=null){ try {bis.close();} catch (IOException e) {e.printStackTrace();}}
         }
 
         return json.toJSONString();
