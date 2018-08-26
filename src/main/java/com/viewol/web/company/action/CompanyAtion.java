@@ -174,4 +174,39 @@ public class CompanyAtion {
 
         return rs.toJSONString();
     }
+
+    @POST
+    @Path(value = "/getProgramMaErCode")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取小程序码", notes = "扫一扫该二维码跳转到小程序主页", author = "更新于 2018-08-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "成功", response = ErCodeResponse.class),
+            @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String getProgramMaErCode(@ApiParam(value = "二维码宽度", required = true) @FormParam("width") int width) {
+
+        ErCodeResponse rs = new ErCodeResponse();
+
+        try{
+            File file = wxService.createProgramWxaCode(width, "pages/index/index");
+
+            String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+            if(file!=null){
+                rs.setStatus("0000");
+                rs.setMessage("成功");
+                rs.setErcode(base64Str);
+            } else {
+                rs.setStatus("0001");
+                rs.setMessage("系统异常");
+            }
+        } catch (Exception e){
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            e.printStackTrace();
+        }
+
+
+        return rs.toJSONString();
+    }
 }
