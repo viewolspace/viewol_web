@@ -411,7 +411,13 @@ public class ScheduleAction {
             if(result>0){
                 rs.setStatus("0000");
                 rs.setMessage("申请成功");
-            }else {
+            }else if(result == -98){
+                rs.setStatus("0002");
+                rs.setMessage("您没有权限申请活动");
+            }else if(result==-99) {
+                rs.setStatus("0002");
+                rs.setMessage("目前您公司已经有正在审核中的活动，请审核通过后在申请");
+            }else{
                 rs.setStatus("0002");
                 rs.setMessage("申请失败");
             }
