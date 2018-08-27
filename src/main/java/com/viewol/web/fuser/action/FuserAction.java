@@ -14,6 +14,8 @@ import com.viewol.web.fuser.vo.UserDownloadResponse;
 import com.viewol.web.ucard.util.SecurityCode;
 import com.viewol.web.ucard.util.SecurityImage;
 import com.viewol.web.ucard.vo.ImageRandVO;
+import com.youguu.core.logging.Log;
+import com.youguu.core.logging.LogFactory;
 import com.youguu.core.util.RedisUtil;
 import com.youguu.core.util.redis.RedisPool;
 import io.swagger.annotations.*;
@@ -49,7 +51,7 @@ public class FuserAction {
     private IUserDownloadService userDownloadService;
     @Resource
     private IUserBrowseService userBrowseService;
-
+    private static Log log = LogFactory.getLog(FuserAction.class);
     /**
      * 查询我的基本信息
      *
@@ -825,7 +827,7 @@ public class FuserAction {
             return JSON.toJSONString(result);
         }
         result.setStatus("0000");
-
+        log.info(result.toJSONString());
         return JSON.toJSONString(result);
     }
 }
