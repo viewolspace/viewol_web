@@ -38,20 +38,18 @@ public class BuserAction {
     })
     public String getBuser(@ApiParam(value = "客户ID", required = true) @QueryParam("userId") int userId) {
 
-        if(userId<=0){
-            return YouguuJsonHelper.returnJSON("0002","userId错误 ， 用户不存在");
+        if (userId <= 0) {
+            return YouguuJsonHelper.returnJSON("0002", "userId错误 ， 用户不存在");
         }
 
         BUser user = ibUserService.getBUser(userId);
 
-        if(user == null ){
-            return YouguuJsonHelper.returnJSON("0002","用户不存在");
+        if (user == null) {
+            return YouguuJsonHelper.returnJSON("0002", "用户不存在");
         }
 
-
-        return YouguuJsonHelper.returnJSON("0000","ok",user);
+        return YouguuJsonHelper.returnJSON("0000", "ok", user);
     }
-
 
 
     @POST
@@ -59,7 +57,8 @@ public class BuserAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "修改基本信息", notes = "修改基本信息", author = "更新于 2018-07-16")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "修改成功", response = Response.class),
+            @ApiResponse(code = "0000", message = "修改成功", response = BUserResponse.class),
+            @ApiResponse(code = "0013", message = "修改失败", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String updateBuser(@ApiParam(value = "业务员ID", required = true) @FormParam("userId") int userId,
@@ -67,23 +66,30 @@ public class BuserAction {
                               @ApiParam(value = "业务员姓名", required = true) @FormParam("position") String position,
                               @ApiParam(value = "业务员姓名", required = true) @FormParam("phone") String phone) {
 
-        if(userId<=0){
-            return YouguuJsonHelper.returnJSON("0002","userId错误 ， 用户不存在");
+        try{
+            if (userId <= 0) {
+                return YouguuJsonHelper.returnJSON("0002", "userId错误 ， 用户不存在");
+            }
+
+            BUser user = ibUserService.getBUser(userId);
+
+            if (user == null) {
+                return YouguuJsonHelper.returnJSON("0002", "用户不存在");
+            }
+
+            user.setPhone(phone);
+            user.setPosition(position);
+            user.setUserName(userName);
+
+            int result = ibUserService.upDateBUser(user);
+            if(result>0){
+                user = ibUserService.getBUser(userId);
+                return YouguuJsonHelper.returnJSON("0000", "ok", user);
+            }
+
+            return YouguuJsonHelper.returnJSON("0000", "修改失败");
+        } catch (Exception e){
+            return YouguuJsonHelper.returnJSON("0001", "系统异常");
         }
-
-        BUser user = ibUserService.getBUser(userId);
-
-        if(user == null ){
-            return YouguuJsonHelper.returnJSON("0002","用户不存在");
-        }
-
-        user.setPhone(phone);
-        user.setPosition(position);
-        user.setUserName(userName);
-
-        ibUserService.upDateBUser(user);
-
-
-        return YouguuJsonHelper.returnJSON("0000","ok");
     }
 }

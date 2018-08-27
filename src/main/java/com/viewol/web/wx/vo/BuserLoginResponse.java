@@ -50,6 +50,12 @@ public class BuserLoginResponse extends Response {
         @ApiModelProperty(value = "展商ID")
         private int companyId;
 
+        @ApiModelProperty(value = "展商Logo")
+        private String companyLogo;
+
+        @ApiModelProperty(value = "展商名称")
+        private String companyName;
+
         @ApiModelProperty(value = "业务员状态，0:待审；1:可使用；-1:打回")
         private int status;
 
@@ -99,6 +105,22 @@ public class BuserLoginResponse extends Response {
 
         public void setCompanyId(int companyId) {
             this.companyId = companyId;
+        }
+
+        public String getCompanyLogo() {
+            return companyLogo;
+        }
+
+        public void setCompanyLogo(String companyLogo) {
+            this.companyLogo = companyLogo;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
         }
 
         public int getStatus() {

@@ -3,14 +3,8 @@ package com.viewol.web.wx.action;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSONObject;
-import com.viewol.pojo.BUser;
-import com.viewol.pojo.FUser;
-import com.viewol.pojo.FUserBind;
-import com.viewol.pojo.UserSession;
-import com.viewol.service.IBUserService;
-import com.viewol.service.IFUserService;
-import com.viewol.service.IUserSessionService;
-import com.viewol.service.IWxService;
+import com.viewol.pojo.*;
+import com.viewol.service.*;
 import com.viewol.web.common.Response;
 import com.viewol.web.wx.vo.BuserLoginResponse;
 import com.viewol.web.wx.vo.FollowResponse;
@@ -47,6 +41,8 @@ public class WxAction {
     private IBUserService bUserService;
     @Resource
     private IUserSessionService userSessionService;
+    @Resource
+    private ICompanyService companyService;
 
     /**
      * 验证token
@@ -322,7 +318,7 @@ public class WxAction {
     @Produces("text/html;charset=UTF-8")
     @ApiOperation(value = "展商业务员扫码登录接口", notes = "展商业务员通过扫描展商管理后台的二维码，获取H5访问权限。", author = "更新于 2018-08-02")
     @ApiResponses(value = {
-            @ApiResponse(code = "0000", message = "授权成功", response = LoginResponse.class),
+            @ApiResponse(code = "0000", message = "授权成功", response = BuserLoginResponse.class),
             @ApiResponse(code = "0002", message = "授权失败", response = Response.class),
             @ApiResponse(code = "0003", message = "获取第三方数据失败", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
@@ -341,6 +337,7 @@ public class WxAction {
             String openid = wxMpOAuth2AccessToken.getOpenId();
             String unionId = wxMpOAuth2AccessToken.getUnionId();
 
+            Company company = companyService.getCompany(companyId);
             //业务员已注册，返回业务员信息
             BUser bUser = bUserService.getBUser(openid);
             if (bUser != null) {
@@ -352,7 +349,8 @@ public class WxAction {
                 userInfo.setHeadImgUrl(bUser.getHeadImgUrl());
                 userInfo.setCompanyId(bUser.getCompanyId());
                 userInfo.setStatus(bUser.getStatus());
-
+                userInfo.setCompanyLogo(company.getLogoView());
+                userInfo.setCompanyName(company.getName());
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
                 rs.setResult(userInfo);
@@ -379,6 +377,12 @@ public class WxAction {
                 userInfo.setUserId(result);
                 userInfo.setHeadImgUrl(bUser.getHeadImgUrl());
                 userInfo.setStatus(BUser.STATUS_TRIAL);
+                userInfo.setUserName(bUser.getUserName());
+                userInfo.setPhone(bUser.getPhone());
+                userInfo.setPosition(bUser.getPosition());
+                userInfo.setCompanyId(bUser.getCompanyId());
+                userInfo.setCompanyLogo(company.getLogoView());
+                userInfo.setCompanyName(company.getName());
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");

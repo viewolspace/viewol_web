@@ -162,10 +162,70 @@ public class ScheduleAction {
                                @ApiParam(value = "发布人类型，-1全部;0-主办方；1-展商; ") @QueryParam("type") int type,
                                @ApiParam(value = "关键词（可匹配主题和展商名称）") @QueryParam("keyword") String keyword,
                                @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
-                               @ApiParam(value = "公司id （业务员查询公司活动的时候使用）") @QueryParam("companyId") int companyId,
+                               @ApiParam(value = "公司id （业务员查询公司活动的时候使用）", defaultValue = "0") @QueryParam("companyId") int companyId,
                                @ApiParam(value = "每次返回多少条记录", required = true) @QueryParam("num") int num) {
 
-        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, lastSeq,num);
+        if(companyId<0){
+            companyId = 0;
+        }
+        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK);
+
+        try{
+            RecommendScheduleResponse rs = new RecommendScheduleResponse();
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
+            if(null == scheduleList || scheduleList.size() == 0){
+
+                return rs.toJSONString();
+            }
+
+            List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+            for(Schedule schedule : scheduleList){
+                RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
+                vo.setId(schedule.getId());
+                vo.setTitle(schedule.getTitle());
+                vo.setCompanyId(schedule.getCompanyId());
+                vo.setCompanyName(schedule.getCompanyName());
+                vo.setCreateTime(schedule.getsTime());
+                vo.setSeq(schedule.getSeq());
+                vo.setStatus(schedule.getStatus());
+                voList.add(vo);
+            }
+
+            rs.setResult(voList);
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
+
+    /**
+     * 查询日程列表，日程主页调用
+     *
+     * @param num     每次返回多少条
+     * @return
+     */
+    @GET
+    @Path(value = "/listSchedule/h5")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "业务员查询日程活动列表（业务员H5端使用）", notes = "查询日程列表，该接口返回待审，审核通过，打回的活动。", author = "更新于 2018-08-27")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String listScheduleH5(@ApiParam(value = "公司id （业务员查询公司活动的时候使用）", required = true) @QueryParam("companyId") int companyId,
+                                 @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "0", required = true) @QueryParam("lastSeq") long lastSeq,
+                               @ApiParam(value = "每次返回多少条记录", defaultValue = "20", required = true) @QueryParam("num") int num) {
+
+        List<Schedule> scheduleList = scheduleService.listSchedule(null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
