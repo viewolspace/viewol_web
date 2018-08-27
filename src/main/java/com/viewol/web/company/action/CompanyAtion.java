@@ -1,14 +1,8 @@
 package com.viewol.web.company.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.viewol.pojo.Company;
-import com.viewol.pojo.CompanyCategory;
-import com.viewol.pojo.UserBrowse;
-import com.viewol.pojo.UserCollection;
-import com.viewol.service.ICompanyService;
-import com.viewol.service.IUserBrowseService;
-import com.viewol.service.IUserCollectionService;
-import com.viewol.service.IWxService;
+import com.viewol.pojo.*;
+import com.viewol.service.*;
 import com.viewol.util.Base64Img;
 import com.viewol.web.common.Response;
 import com.viewol.web.company.vo.CompanyListVO;
@@ -35,14 +29,14 @@ public class CompanyAtion {
 
     @Resource
     private ICompanyService companyService;
-
     @Resource
     private IUserCollectionService userCollectionService;
-
     @Resource
     private IUserBrowseService userBrowseService;
     @Resource
     private IWxService wxService;
+    @Resource
+    private IBUserService bUserService;
     /**
      * 推荐展商查询，共12个
      * @return
@@ -148,13 +142,20 @@ public class CompanyAtion {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String getCompanyMaErCode(@ApiParam(value = "type，1-代表交换名片", required = true) @FormParam("type") int type,
-                              @ApiParam(value = "业务员ID", required = true) @FormParam("fUserId") int fUserId,
+                              @ApiParam(value = "业务员ID", required = true) @FormParam("bUserId") int bUserId,
                               @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId) {
 
         ErCodeResponse rs = new ErCodeResponse();
 
         try{
-            File file = wxService.createCompanyWxaCode(type, companyId, fUserId, "pages/company/index");
+            //没有的话 查询默认第一个业务员ID
+            if(bUserId<=0){
+                List<BUser> bUserList = bUserService.listByCom(companyId);
+                if(bUserList!=null && bUserList.size()>0){
+                    bUserId = bUserList.get(0).getUserId();
+                }
+            }
+            File file = wxService.createCompanyWxaCode(type, companyId, bUserId, "pages/company/index");
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){
