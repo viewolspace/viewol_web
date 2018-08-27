@@ -143,7 +143,8 @@ public class CompanyAtion {
     })
     public String getCompanyMaErCode(@ApiParam(value = "type，1-代表交换名片", required = true) @FormParam("type") int type,
                               @ApiParam(value = "业务员ID", required = true) @FormParam("bUserId") int bUserId,
-                              @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId) {
+                              @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                              @ApiParam(value = "二维码宽度，不填默认宽度430px") @FormParam("width") int width) {
 
         ErCodeResponse rs = new ErCodeResponse();
 
@@ -155,7 +156,7 @@ public class CompanyAtion {
                     bUserId = bUserList.get(0).getUserId();
                 }
             }
-            File file = wxService.createCompanyWxaCode(type, companyId, bUserId, "pages/company/index");
+            File file = wxService.createCompanyWxaCode(type, companyId, bUserId, "pages/company/index", width);
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){

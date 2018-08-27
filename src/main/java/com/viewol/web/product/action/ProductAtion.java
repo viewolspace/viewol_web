@@ -149,12 +149,13 @@ public class ProductAtion {
     })
     public String getProductMaErCode(@ApiParam(value = "type，1-代表交换名片") @FormParam("type") int type,
                                      @ApiParam(value = "产品ID", required = true) @FormParam("productId") int productId,
-                                     @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId) {
+                                     @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+                                     @ApiParam(value = "二维码宽度，不填默认宽度430px") @FormParam("width") int width) {
 
         ErCodeResponse rs = new ErCodeResponse();
 
         try {
-            File file = wxService.createProductWxaCode(type, companyId, productId, "pages/product/info");
+            File file = wxService.createProductWxaCode(type, companyId, productId, "pages/product/info", width);
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){
