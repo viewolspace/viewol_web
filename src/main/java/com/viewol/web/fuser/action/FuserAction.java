@@ -206,6 +206,9 @@ public class FuserAction {
                 rs.setMessage("用户不存在");
                 return rs.toJSONString();
             }
+            if(companyId>0){
+                fUser.setCompanyId(companyId);
+            }
 
             fUser.setUserName(userName);
             fUser.setPhone(phone);
@@ -278,6 +281,9 @@ public class FuserAction {
                 rs.setStatus("0002");
                 rs.setMessage("用户不存在");
                 return rs.toJSONString();
+            }
+            if(companyId>0){
+                fUser.setCompanyId(companyId);
             }
 
             fUser.setUserName(userName);
