@@ -135,7 +135,7 @@ public class WxAction {
             String unionid = wxMaJscode2Session.getUnionid();
 
             //已注册，返回用户信息
-            FUser fuser = fUserService.getUserByOpenId(openid, FUserBind.TYPE_PROGRAM);
+            FUser fuser = fUserService.getUserByUuid(unionid);
             if (fuser != null) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
                 userInfo.setUserId(fuser.getUserId());
