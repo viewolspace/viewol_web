@@ -158,6 +158,8 @@ public class ScheduleAction {
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
     public String listSchedule(@ApiParam(value = "格式 HH:mm 表示查询此时间正在进行的活动 配合date使用 ") @QueryParam("time") String time,
+                               @ApiParam(value = "格式 HH:mm  ") @QueryParam("endTime") String endTime,
+                               @ApiParam(value = "举办地址 ") @QueryParam("place") String place,
                                @ApiParam(value = "格式 yyyy-MM-dd 此字段用于日历点击使用  ") @QueryParam("date") String date,
                                @ApiParam(value = "发布人类型，-1全部;0-主办方；1-展商; ") @QueryParam("type") int type,
                                @ApiParam(value = "关键词（可匹配主题和展商名称）") @QueryParam("keyword") String keyword,
@@ -168,7 +170,7 @@ public class ScheduleAction {
         if(companyId<0){
             companyId = 0;
         }
-        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK);
+        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK,endTime,place);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
@@ -225,7 +227,7 @@ public class ScheduleAction {
                                  @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "0", required = true) @QueryParam("lastSeq") long lastSeq,
                                @ApiParam(value = "每次返回多少条记录", defaultValue = "20", required = true) @QueryParam("num") int num) {
 
-        List<Schedule> scheduleList = scheduleService.listSchedule(null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2);
+        List<Schedule> scheduleList = scheduleService.listSchedule(null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2,null,null);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
