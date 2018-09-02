@@ -729,7 +729,7 @@ public class FuserAction {
         StringBuilder sb = new StringBuilder("");
         for(Product product:products){
             if(product.getPdfUrl()!=null && !"".equals(product.getPdfUrl())){
-                sb.append("<b>").append(product.getName()).append("</b>").append("<a href=\""+product.getPdfUrlView()+"\">查看说明书</a>");
+                sb.append("<b>").append(product.getName()).append("</b>").append("<a href=\""+product.getPdfUrlView()+"\">查看说明书</a></br>");
             }
         }
         return sb.toString();
