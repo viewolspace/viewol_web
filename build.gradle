@@ -96,6 +96,8 @@ dependencies {
 
     compile 'org.apache.james:apache-mime4j:0.6.1'
 
+    compile 'org.dom4j:dom4j:2.0.0'
+
     compile fileTree(dir: 'src/main/webapp/WEB-INF/lib', include: '*.jar')
 
 }

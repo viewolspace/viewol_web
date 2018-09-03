@@ -6,10 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.*;
 import com.viewol.service.*;
 import com.viewol.web.common.Response;
+import com.viewol.web.wx.util.WechatMessageUtil;
 import com.viewol.web.wx.vo.BuserLoginResponse;
 import com.viewol.web.wx.vo.FollowResponse;
 import com.viewol.web.wx.vo.LoginResponse;
 import com.viewol.web.wx.vo.WxJsapiSignatureVO;
+import com.youguu.core.logging.Log;
+import com.youguu.core.logging.LogFactory;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
 import me.chanjar.weixin.common.bean.WxJsapiSignature;
@@ -21,6 +24,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import java.util.Map;
 
 @SwaggerDefinition(
         tags = {
@@ -31,7 +35,7 @@ import javax.ws.rs.core.Context;
 @Path(value = "wx")
 @Controller("wxAction")
 public class WxAction {
-
+    private static Log log = LogFactory.getLog(WxAction.class);
 
     @Resource
     private IWxService wxService;
@@ -57,6 +61,10 @@ public class WxAction {
                           @QueryParam("timestamp") String timestamp,
                           @QueryParam("nonce") String nonce,
                           @QueryParam("echostr") String echostr) {
+
+
+
+
         if (echostr != null) return echostr;
         return "";
     }
@@ -80,21 +88,49 @@ public class WxAction {
                           @QueryParam("nonce") String nonce,
                           @QueryParam("echostr") String echostr,
                           @Context HttpServletRequest request) {
-//        Map<String, String> map = WechatMessageUtil.xmlToMap(request);
-//        String event = map.get("Event");
-//        loger.info("data:{}",map.toString());
-//        String open_id = map.get("FromUserName");
+        Map<String, String> map = WechatMessageUtil.xmlToMap(request);
+        String event = map.get("Event");
+        log.info("data:{}",map.toString());
+        String openId = map.get("FromUserName");
 //        String eventKey;
-//        switch (event){
-//            case WechatMessageUtil.MESSAGE_EVENT_SUBSCRIBE:
-//
-//                break;
-//            case  WechatMessageUtil.MESSAGE_EVENT_SCAN:
-//
-//                break;
-//            default:
-//                break;
-//        }
+        try{
+            switch (event){
+                case WechatMessageUtil.MESSAGE_EVENT_SUBSCRIBE:
+                    log.info("用户关注:{}",openId);
+                    FUser fUser = fUserService.getUserByOpenId(openId,FUserBind.TYPE_WEIXIN);
+                    if(fUser==null){
+                        WxMpUser wm = wxService.getUserInfo(openId);
+                        log.info("WxMpUser:{}",wm);
+                        if(wm != null ){
+                            if(wm.getSubscribe()){
+                                fUser = fUserService.getUserByUuid(wm.getUnionId());
+                                if(fUser==null){
+                                    fUser = new FUser();
+                                    fUser.setUuid(wm.getUnionId());
+                                    fUser.setHeadImgUrl(wm.getHeadImgUrl());
+                                    int result = fUserService.addFUser(fUser, openId, wm.getUnionId(), FUserBind.TYPE_WEIXIN);
+                                }else{
+                                    fUserService.addFuserBind(fUser.getUserId(),openId, wm.getUnionId(), FUserBind.TYPE_WEIXIN);
+                                }
+
+
+                                log.info("添加用户:{}",openId);
+                            }
+                        }
+                    }else{
+                        log.info("用户已经存在:{}",openId);
+                    }
+                    break;
+                case  WechatMessageUtil.MESSAGE_EVENT_SCAN:
+
+                    break;
+                default:
+                    break;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         return "success";
     }

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.viewol.pojo.Schedule;
 import com.viewol.pojo.ScheduleVO;
 import com.viewol.service.IScheduleService;
+import com.viewol.service.IWxService;
 import com.viewol.web.common.Response;
 import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.web.schedule.vo.ScheduleResponse;
@@ -29,6 +30,9 @@ public class ScheduleAction {
 
     @Resource
     private IScheduleService scheduleService;
+
+    @Resource
+    private IWxService wxService;
 
 
     /**
@@ -310,6 +314,9 @@ public class ScheduleAction {
             vo.setRecommendETime(scheduleVO.getRecommendETime());
             vo.setApplyStatus(scheduleVO.getApplyStatus());
 
+            boolean result = wxService.isFollow(userId);
+            vo.setFollow(result);
+
             rs.setStatus("0000");
             rs.setMessage("查询成功");
             rs.setResult(vo);
@@ -342,7 +349,8 @@ public class ScheduleAction {
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "报名成功", response = Response.class),
             @ApiResponse(code = "0002", message = "报名失败", response = Response.class),
-            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class),
+            @ApiResponse(code = "0005", message = "请先关注公众号", response = Response.class)
     })
     public String applyJoin(@ApiParam(value = "客户ID", required = true) @FormParam("userId") int userId,
                             @ApiParam(value = "活动ID", required = true) @FormParam("scheduleId") int scheduleId,
@@ -353,6 +361,12 @@ public class ScheduleAction {
         try{
             if(userId <= 0){
                 return YouguuJsonHelper.returnJSON("0002","请先登录");
+            }
+            if(needReminder){
+                boolean result = wxService.isFollow(userId);
+                if(!result){
+                    return YouguuJsonHelper.returnJSON("0005","请先关注公众号");
+                }
             }
 
             int result = scheduleService.applyJoin(userId, scheduleId, needReminder);

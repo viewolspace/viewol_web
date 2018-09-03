@@ -82,6 +82,9 @@ public class ScheduleResponse extends Response {
         @ApiModelProperty(value = "是否允许报名，0-不允许报名，1-可以报名，2-已经报名 3-活动已经结束")
         private int applyStatus;
 
+        @ApiModelProperty(value = "是否关注 true 关注 false 没有关注")
+        private boolean follow;
+
         public Integer getId() {
             return id;
         }
@@ -208,6 +211,14 @@ public class ScheduleResponse extends Response {
 
         public void setApplyStatus(int applyStatus) {
             this.applyStatus = applyStatus;
+        }
+
+        public boolean isFollow() {
+            return follow;
+        }
+
+        public void setFollow(boolean follow) {
+            this.follow = follow;
         }
     }
 
