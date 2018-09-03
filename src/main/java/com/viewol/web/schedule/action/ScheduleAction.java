@@ -432,7 +432,7 @@ public class ScheduleAction {
                 rs.setMessage("您没有权限申请活动");
             }else if(result==-99) {
                 rs.setStatus("0002");
-                rs.setMessage("目前您公司已经有正在审核中的活动，请审核通过后在申请");
+                rs.setMessage("今天的申请已经达到上限，请明天再申请。");
             }else{
                 rs.setStatus("0002");
                 rs.setMessage("申请失败");
