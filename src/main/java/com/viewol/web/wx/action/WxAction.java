@@ -136,6 +136,23 @@ public class WxAction {
     }
 
 
+    private LoginResponse.UserInfo getUserInfo(FUser fuser,LoginResponse rs){
+        LoginResponse.UserInfo userInfo = rs.new UserInfo();
+        userInfo.setUserId(fuser.getUserId());
+        userInfo.setUserName(fuser.getUserName());
+        userInfo.setPhone(fuser.getPhone());
+        userInfo.setCompany(fuser.getCompany());
+        userInfo.setPosition(fuser.getPosition());
+        userInfo.setEmail(fuser.getEmail());
+        userInfo.setAge(fuser.getAge());
+        userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
+        userInfo.setCompanyId(fuser.getCompanyId());
+
+        String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+        userInfo.setSessionId(sessionId);
+        return userInfo;
+    }
+
     /**
      * 小程序自动登录
      *
@@ -171,21 +188,24 @@ public class WxAction {
             String unionid = wxMaJscode2Session.getUnionid();
 
             //已注册，返回用户信息
-            FUser fuser = fUserService.getUserByUuid(unionid);
+            FUser fuser = fUserService.getUserByOpenId(openid,FUserBind.TYPE_PROGRAM);
+//            FUser fuser = fUserService.getUserByUuid(unionid);
             if (fuser != null) {
-                LoginResponse.UserInfo userInfo = rs.new UserInfo();
-                userInfo.setUserId(fuser.getUserId());
-                userInfo.setUserName(fuser.getUserName());
-                userInfo.setPhone(fuser.getPhone());
-                userInfo.setCompany(fuser.getCompany());
-                userInfo.setPosition(fuser.getPosition());
-                userInfo.setEmail(fuser.getEmail());
-                userInfo.setAge(fuser.getAge());
-                userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
-                userInfo.setCompanyId(fuser.getCompanyId());
 
-                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
-                userInfo.setSessionId(sessionId);
+                LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
+                rs.setStatus("0000");
+                rs.setMessage("授权成功");
+                rs.setResult(userInfo);
+                return rs.toJSONString();
+            }
+
+            //可能是新用户
+            WxMaUserInfo wxMaUserInfo = wxService.getUserInfo(sessionKey, encryptedData, ivStr);
+            //先使用uuid查询一下
+            fuser = fUserService.getUserByUuid(wxMaUserInfo.getUnionId());
+            if(fuser!=null){
+                fUserService.addFuserBind(fuser.getUserId(),openid, wxMaUserInfo.getUnionId(), FUserBind.TYPE_PROGRAM);
+                LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
 
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -194,7 +214,6 @@ public class WxAction {
             }
 
             //注册新用户
-            WxMaUserInfo wxMaUserInfo = wxService.getUserInfo(sessionKey, encryptedData, ivStr);
             fuser = new FUser();
             if (wxMaUserInfo != null) {
                 fuser.setHeadImgUrl(wxMaUserInfo.getAvatarUrl());
@@ -219,6 +238,7 @@ public class WxAction {
                 rs.setMessage("注册失败");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             rs.setStatus("0001");
             rs.setMessage("系统异常");
         }
