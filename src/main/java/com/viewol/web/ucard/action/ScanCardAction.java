@@ -189,6 +189,8 @@ public class ScanCardAction {
                 fileByte = os.toByteArray();
             }
 
+            System.out.println("大小:" + fileByte.length/1024 + " K");
+
             BASE64Encoder encoder = new BASE64Encoder();
             String base64 = encoder.encode(fileByte);
             Map<String,String> map = new HashMap<>();

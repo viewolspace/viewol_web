@@ -193,7 +193,7 @@ public class FuserAction {
 
             String rand_s = redis.get(phoneKey);
 
-            if(rand==null || !rand.equals(rand_s)){
+            if(rand==null || rand_s==null || !rand.toLowerCase().equals(rand_s.toLowerCase())){
                 rs.setStatus("0004");
                 rs.setMessage("验证码错误");
                 return rs.toJSONString();
