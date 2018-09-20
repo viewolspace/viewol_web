@@ -5,7 +5,9 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.*;
 import com.viewol.service.*;
+import com.viewol.util.Base64Img;
 import com.viewol.web.common.Response;
+import com.viewol.web.company.vo.ErCodeResponse;
 import com.viewol.web.wx.util.WechatMessageUtil;
 import com.viewol.web.wx.vo.BuserLoginResponse;
 import com.viewol.web.wx.vo.FollowResponse;
@@ -24,6 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import java.io.File;
 import java.util.Map;
 
 @SwaggerDefinition(
@@ -473,5 +476,41 @@ public class WxAction {
         WxJsapiSignature wxJsapiSignature = wxService.createJsapiSignature(url);
         json.put("result",wxJsapiSignature);
         return json.toJSONString();
+    }
+
+
+    @GET
+    @Path(value = "/getPublicxaCode")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "获取小程序二维码", notes = "", author = "更新于 2018-07-23")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "查询成功", response = WxJsapiSignatureVO.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = WxJsapiSignatureVO.class)
+    })
+    public String getPublicxaCode(@ApiParam(value = "page", required = true) @QueryParam("page") String page,
+                                  @ApiParam(value = "scene", required = true) @QueryParam("scene") String scene,
+                                  @ApiParam(value = "width", required = true) @QueryParam("width") int width) {
+        ErCodeResponse rs = new ErCodeResponse();
+
+        try {
+            File file = wxService.createPublicxaCode(page,scene,width);
+
+            String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+            if(file!=null){
+                rs.setStatus("0000");
+                rs.setMessage("成功");
+                rs.setErcode(base64Str);
+            } else {
+                rs.setStatus("0001");
+                rs.setMessage("系统异常");
+            }
+        } catch (Exception e){
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            e.printStackTrace();
+        }
+
+
+        return rs.toJSONString();
     }
 }
