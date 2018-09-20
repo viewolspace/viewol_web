@@ -754,7 +754,7 @@ public class FuserAction {
             return JSON.toJSONString(result);
         }
 
-        String securityCode = SecurityCode.getSecurityCode();
+        String securityCode = SecurityCode.getSimpleSecurityCode();
 
 
         byte[] image = SecurityImage.getImageAsInputStream(securityCode.replaceAll("", " "));
