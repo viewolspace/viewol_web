@@ -2,6 +2,7 @@ package com.viewol.web.fuser.action;
 
 import com.alibaba.fastjson.JSON;
 import com.viewol.pojo.*;
+import com.viewol.pojo.query.UserCardQuery;
 import com.viewol.service.*;
 import com.viewol.sms.ISmsService;
 import com.viewol.sms.QingSmsServiceImpl;
@@ -51,6 +52,13 @@ public class FuserAction {
     private IUserDownloadService userDownloadService;
     @Resource
     private IUserBrowseService userBrowseService;
+
+    @Resource
+    private IUserCardService userCardService;
+
+    @Resource
+    private IBUserService userService;
+
     private static Log log = LogFactory.getLog(FuserAction.class);
     /**
      * 查询我的基本信息
@@ -208,6 +216,24 @@ public class FuserAction {
             }
             if(companyId>0){
                 fUser.setCompanyId(companyId);
+                try{
+                    //进行名片交换
+                    List<BUser> list = userService.listByCom(companyId);
+                    if(list !=null && list.size()>0){
+                        int bUserId = list.get(0).getUserId();
+                        UserCardQuery query = new UserCardQuery();
+                        query.setfUserId(userId);
+                        query.setCompanyId(companyId);
+
+                        List<UserCardVO> userCardVOs = userCardService.listUserCard(query);
+                        if(userCardVOs==null || userCardVOs.size() == 0){
+                            userCardService.addUserCard(userId, bUserId, companyId);
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
 
             fUser.setUserName(userName);
@@ -232,6 +258,7 @@ public class FuserAction {
 
             return rs.toJSONString();
         } catch (Exception e){
+            e.printStackTrace();
             Response rs = new Response();
             rs.setStatus("0001");
             rs.setMessage("系统异常");
