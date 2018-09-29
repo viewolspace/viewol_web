@@ -204,12 +204,12 @@ public class UserCardAction {
         }
 
         if(bUserId<=0){//查询第一个业务员
-            List<BUser> list = userService.listByCom(companyId);
-            if(list==null || list.size()==0){
+            BUser bUser = userService.getFirstBuser(companyId);
+            if(bUser==null){
                 return YouguuJsonHelper.returnJSON("0002","该展商目前没有业务员");
             }
 
-            bUserId = list.get(0).getUserId();
+            bUserId = bUser.getUserId();
         }
 
         UserCardQuery query = new UserCardQuery();

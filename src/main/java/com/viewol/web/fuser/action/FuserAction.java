@@ -218,9 +218,9 @@ public class FuserAction {
                 fUser.setCompanyId(companyId);
                 try{
                     //进行名片交换
-                    List<BUser> list = userService.listByCom(companyId);
-                    if(list !=null && list.size()>0){
-                        int bUserId = list.get(0).getUserId();
+                    BUser bUser = userService.getFirstBuser(companyId);
+                    if(bUser !=null ){
+                        int bUserId = bUser.getUserId();
                         UserCardQuery query = new UserCardQuery();
                         query.setfUserId(userId);
                         query.setCompanyId(companyId);
