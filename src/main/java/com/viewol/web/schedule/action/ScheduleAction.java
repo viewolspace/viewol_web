@@ -321,7 +321,7 @@ public class ScheduleAction {
             rs.setMessage("查询成功");
             rs.setResult(vo);
 
-            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mm";//设置日期格式
 
             return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 
