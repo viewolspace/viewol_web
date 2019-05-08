@@ -543,8 +543,12 @@ public class WxAction {
             String accessToken = wxMpOAuth2AccessToken.getAccessToken();
             String openid = wxMpOAuth2AccessToken.getOpenId();
             String unionId = wxMpOAuth2AccessToken.getUnionId();
+            WxMpUser wxMpUser = wxService.getUserInfo(accessToken, openid);
             json.put("status","0000");
             json.put("openid", openid);
+            json.put("pic", wxMpUser.getHeadImgUrl());
+
+
 
         }catch (Exception e){
             json.put("status","0001");
