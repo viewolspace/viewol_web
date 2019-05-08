@@ -513,4 +513,43 @@ public class WxAction {
 
         return rs.toJSONString();
     }
+
+
+    /**
+     * H5获取openId
+     *
+     * @param jscode 临时授权code
+     * @return
+     */
+    @GET
+    @Path(value = "/getOpenId")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "H5获取openId", notes = "H5获取openId", author = "更新于 2018-08-02")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "授权成功", response = LoginResponse.class),
+            @ApiResponse(code = "0002", message = "授权失败", response = Response.class),
+            @ApiResponse(code = "0003", message = "获取第三方数据失败", response = Response.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String getOpenId(@ApiParam(value = "临时授权code", required = true) @QueryParam("jscode") String jscode) {
+        JSONObject json = new JSONObject();
+
+        try {
+            WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxService.getAccessToken(jscode);
+            if (wxMpOAuth2AccessToken == null) {
+                return YouguuJsonHelper.returnJSON("0002", "授权失败");
+            }
+
+            String accessToken = wxMpOAuth2AccessToken.getAccessToken();
+            String openid = wxMpOAuth2AccessToken.getOpenId();
+            String unionId = wxMpOAuth2AccessToken.getUnionId();
+            json.put("status","0000");
+            json.put("openid", openid);
+
+        }catch (Exception e){
+            json.put("status","0001");
+            json.put("msg","错误");
+        }
+        return json.toJSONString();
+    }
 }
