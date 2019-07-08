@@ -1,10 +1,7 @@
 package com.viewol.web.product.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.viewol.pojo.Company;
-import com.viewol.pojo.Product;
-import com.viewol.pojo.UserBrowse;
-import com.viewol.pojo.UserCollection;
+import com.viewol.pojo.*;
 import com.viewol.service.*;
 import com.viewol.util.Base64Img;
 import com.viewol.web.common.Response;
@@ -43,6 +40,9 @@ public class ProductAtion {
     private IUserBrowseService userBrowseService;
     @Resource
     private IWxService wxService;
+
+    @Resource
+    private IUserInteractService interactService;
 
     /**
      * 推荐产品查询，共12个
@@ -112,9 +112,14 @@ public class ProductAtion {
         Product product = productService.getProduct(id);
 
         int collection = 0;
+        int isPraise = 0;
 
         if(userId > 0){
             collection = userCollectionService.isCollection(userId, UserCollection.TYPE_PRODUCT,id);
+            UserInteract userInteract = interactService.getUserInteract(userId,id,UserInteract.CLASSIFY_PRODUCT,UserInteract.TYPE_PRAISE);
+            if(userInteract!=null){
+                isPraise = 1;
+            }
         }
 
         JSONObject json = new JSONObject();
@@ -122,15 +127,25 @@ public class ProductAtion {
         json.put("message","ok");
         json.put("result",product);
         json.put("collection",collection);
-
+        json.put("isPraise",isPraise);
         if(product!=null){
             Company c =  companyService.getCompany(product.getCompanyId());
             json.put("company",c);
         }
 
+        List<UserInteract> see = interactService.queryList(id, UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_SEE, 12);
+
+        List<UserInteract> praise = interactService.queryList(id, UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_PRAISE, 12);
+
+        List<UserInteract> comment = interactService.queryList(id, UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_COMMENT, 12);
+
+        json.put("see",see);
+        json.put("praise",praise);
+        json.put("comment",comment);
+
         try{
             if(userId>0){
-                userBrowseService.addUserBrowse(userId, UserBrowse.TYPE_PRODUCT,id);
+                interactService.userInteract(userId, id, UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_SEE);
             }
 
         }catch (Exception e){

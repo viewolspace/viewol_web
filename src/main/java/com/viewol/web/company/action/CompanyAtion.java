@@ -29,14 +29,21 @@ public class CompanyAtion {
 
     @Resource
     private ICompanyService companyService;
+
     @Resource
     private IUserCollectionService userCollectionService;
+
     @Resource
     private IUserBrowseService userBrowseService;
+
     @Resource
     private IWxService wxService;
+
     @Resource
     private IBUserService bUserService;
+
+    @Resource
+    private IUserInteractService interactService;
     /**
      * 推荐展商查询，共12个
      * @return
@@ -108,9 +115,14 @@ public class CompanyAtion {
         }
 
         int collection = 0;
+        int isPraise = 0;
 
         if(userId > 0){
             collection = userCollectionService.isCollection(userId, UserCollection.TYPE_COM,id);
+            UserInteract userInteract = interactService.getUserInteract(userId,id,UserInteract.CLASSIFY_COMPANY,UserInteract.TYPE_PRAISE);
+            if(userInteract!=null){
+                isPraise = 1;
+            }
         }
         JSONObject json = new JSONObject();
         json.put("code","0000");
@@ -118,11 +130,23 @@ public class CompanyAtion {
         json.put("result",company);
         json.put("categoryId",categoryId);
         json.put("collection",collection);
+        json.put("isPraise",isPraise);
+        if(company.getShow()!=null && !"".equals(company.getShow())){
+            json.put("show",company.getShow());
+        }
 
+        List<UserInteract> see = interactService.queryList(id, UserInteract.CLASSIFY_COMPANY, UserInteract.TYPE_SEE, 12);
 
+        List<UserInteract> praise = interactService.queryList(id, UserInteract.CLASSIFY_COMPANY, UserInteract.TYPE_PRAISE, 12);
+
+        List<UserInteract> comment = interactService.queryList(id, UserInteract.CLASSIFY_COMPANY, UserInteract.TYPE_COMMENT, 12);
+
+        json.put("see",see);
+        json.put("praise",praise);
+        json.put("comment",comment);
         try{
             if(userId>0){
-                userBrowseService.addUserBrowse(userId, UserBrowse.TYPE_COM,id);
+                interactService.userInteract(userId,id,UserInteract.CLASSIFY_COMPANY,UserInteract.TYPE_SEE);
             }
 
         }catch (Exception e){
