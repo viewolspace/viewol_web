@@ -48,9 +48,9 @@ public class ScheduleAction {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String queryNowHostSchedule() {
+    public String queryNowHostSchedule(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId) {
         try{
-            List<Schedule> scheduleList = scheduleService.queryNowHostSchedule();
+            List<Schedule> scheduleList = scheduleService.queryNowHostSchedule(expoId);
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
 
             if(null == scheduleList || scheduleList.size() == 0){
@@ -100,7 +100,9 @@ public class ScheduleAction {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String queryNowRecommendSchedule(@ApiParam(value = "推荐类型：1-置顶；2-推荐", required = true) @QueryParam("type") int type) {
+    public String queryNowRecommendSchedule(
+            @ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+            @ApiParam(value = "推荐类型：1-置顶；2-推荐", required = true) @QueryParam("type") int type) {
         if (type != 1 && type != 2) {
             Response rs = new Response();
             rs.setStatus("0002");
@@ -109,7 +111,7 @@ public class ScheduleAction {
         }
 
         try{
-            List<ScheduleVO> scheduleVOList = scheduleService.queryNowRecommendSchedule(type);
+            List<ScheduleVO> scheduleVOList = scheduleService.queryNowRecommendSchedule(expoId,type);
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
 
             if(null == scheduleVOList || scheduleVOList.size() == 0){
@@ -161,7 +163,8 @@ public class ScheduleAction {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String listSchedule(@ApiParam(value = "格式 HH:mm 表示查询此时间正在进行的活动 配合date使用 ") @QueryParam("time") String time,
+    public String listSchedule(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+                               @ApiParam(value = "格式 HH:mm 表示查询此时间正在进行的活动 配合date使用 ") @QueryParam("time") String time,
                                @ApiParam(value = "格式 HH:mm  ") @QueryParam("endTime") String endTime,
                                @ApiParam(value = "举办地址 ") @QueryParam("place") String place,
                                @ApiParam(value = "格式 yyyy-MM-dd 此字段用于日历点击使用  ") @QueryParam("date") String date,
@@ -174,7 +177,7 @@ public class ScheduleAction {
         if(companyId<0){
             companyId = 0;
         }
-        List<Schedule> scheduleList = scheduleService.listSchedule(time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK,endTime,place);
+        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK,endTime,place);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
@@ -227,11 +230,13 @@ public class ScheduleAction {
             @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String listScheduleH5(@ApiParam(value = "公司id （业务员查询公司活动的时候使用）", required = true) @QueryParam("companyId") int companyId,
+    public String listScheduleH5(
+            @ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+                                @ApiParam(value = "公司id （业务员查询公司活动的时候使用）", required = true) @QueryParam("companyId") int companyId,
                                  @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "0", required = true) @QueryParam("lastSeq") long lastSeq,
                                @ApiParam(value = "每次返回多少条记录", defaultValue = "20", required = true) @QueryParam("num") int num) {
 
-        List<Schedule> scheduleList = scheduleService.listSchedule(null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2,null,null);
+        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2,null,null);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
@@ -413,7 +418,9 @@ public class ScheduleAction {
             @ApiResponse(code = "0002", message = "申请失败", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String applySchedule(@ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
+    public String applySchedule(
+            @ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+                                @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
                                 @ApiParam(value = "活动标题", required = true) @FormParam("title") String title,
                                 @ApiParam(value = "活动位置", required = true) @FormParam("place") String place,
                                 @ApiParam(value = "活动详情", required = true) @FormParam("content") String content,
@@ -423,7 +430,7 @@ public class ScheduleAction {
         Response rs = new Response();
 
         try{
-            int result = scheduleService.applySchedule(companyId, title, place, content, startTime, endTime);
+            int result = scheduleService.applySchedule(expoId,companyId, title, place, content, startTime, endTime);
             if(result>0){
                 rs.setStatus("0000");
                 rs.setMessage("申请成功");

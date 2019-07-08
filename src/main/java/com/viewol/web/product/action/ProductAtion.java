@@ -57,9 +57,9 @@ public class ProductAtion {
             @ApiResponse(code = "0000", message = "请求成功" ,response = ProductModuleVO.class),
 
     })
-    public String recommentProductList() {
+    public String recommentProductList(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId) {
 
-        List<Product> list =  productService.queryRecommentProduct();
+        List<Product> list =  productService.queryRecommentProduct(expoId);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
 
@@ -82,12 +82,13 @@ public class ProductAtion {
             @ApiResponse(code = "0000", message = "请求成功"  ,response = ProductModuleVO.class)
 
     })
-    public String listProduct(@ApiParam(value = "展商的id ， 选填", defaultValue = "-1", required = false) @QueryParam("companyId") int companyId,
+    public String listProduct(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+                              @ApiParam(value = "展商的id ， 选填", defaultValue = "-1", required = false) @QueryParam("companyId") int companyId,
                               @ApiParam(value = "产品名称 ， 选填", defaultValue = "-1", required = false)         @QueryParam("name") String name,
                               @ApiParam(value = "分类id ， 选填", defaultValue = "-1", required = false)         @QueryParam("categoryId") String categoryId,
                               @ApiParam(value = "返回list最小的seq ， 第一页不需要传", defaultValue = "-1", required = false)         @QueryParam("lastSeq") long lastSeq,
                               @ApiParam(value = "数量 ， 必填", defaultValue = "5", required = true)         @QueryParam("num") int num) {
-        List<Product> list = productService.listProduct(companyId, name, categoryId, lastSeq, num);
+        List<Product> list = productService.listProduct(expoId,companyId, name, categoryId, lastSeq, num);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }
