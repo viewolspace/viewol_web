@@ -39,11 +39,12 @@ public class InfoAction {
             @ApiResponse(code = "0000", message = "请求成功" ,response = InfoResponse.class),
 
     })
-    public String infoList(@ApiParam(value = "最后一条记录ID", defaultValue = "0", required = true) @QueryParam("lastSeq") int lastSeq,
+    public String infoList(@ApiParam(value = "分类id", defaultValue = "0", required = true) @QueryParam("classify") int classify,
+                            @ApiParam(value = "最后一条记录ID", defaultValue = "0", required = true) @QueryParam("lastSeq") int lastSeq,
                            @ApiParam(value = "每页多少条记录", defaultValue = "10", required = true) @QueryParam("pageSize") int pageSize) {
         InfoResponse rs = new InfoResponse();
         try{
-            List<Info> list =  infoService.listInfo(lastSeq, pageSize);
+            List<Info> list =  infoService.listInfo(classify,lastSeq, pageSize);
             if(list!=null && list.size()>0){
                 rs.setStatus("0000");
                 rs.setMessage("ok");
