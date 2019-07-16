@@ -56,6 +56,18 @@ public class RecommendScheduleResponse extends Response {
 		@ApiModelProperty(value = "审核状态：1-审核通过；0-审核中；-1-打回")
 		private int status;
 
+		@ApiModelProperty(value = "开始时间")
+		private Date sTime;
+
+		@ApiModelProperty(value = "结束时间")
+		private Date eTime;
+
+		@ApiModelProperty(value = "位置")
+		private String place;
+
+		@ApiModelProperty(value = "用于时间显示")
+		private String disTime;
+
 		public Integer getId() {
 			return id;
 		}
@@ -110,6 +122,38 @@ public class RecommendScheduleResponse extends Response {
 
 		public void setStatus(int status) {
 			this.status = status;
+		}
+
+		public Date getsTime() {
+			return sTime;
+		}
+
+		public void setsTime(Date sTime) {
+			this.sTime = sTime;
+		}
+
+		public Date geteTime() {
+			return eTime;
+		}
+
+		public void seteTime(Date eTime) {
+			this.eTime = eTime;
+		}
+
+		public String getPlace() {
+			return place;
+		}
+
+		public void setPlace(String place) {
+			this.place = place;
+		}
+
+		public String getDisTime() {
+			return disTime;
+		}
+
+		public void setDisTime(String disTime) {
+			this.disTime = disTime;
 		}
 	}
 }

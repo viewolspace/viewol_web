@@ -131,8 +131,8 @@ public class CompanyAtion {
         json.put("categoryId",categoryId);
         json.put("collection",collection);
         json.put("isPraise",isPraise);
-        if(company.getShow()!=null && !"".equals(company.getShow())){
-            json.put("show",company.getShow());
+        if(company.getShowInfo()!=null && !"".equals(company.getShowInfo())){
+            json.put("showInfo",company.getShowInfo());
         }
 
         List<UserInteract> see = interactService.queryList(id, UserInteract.CLASSIFY_COMPANY, UserInteract.TYPE_SEE, 12);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.ws.rs.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +122,11 @@ public class ScheduleAction {
             }
 
             List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy.MM.dd HH:mm") ;
+
+            SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm") ;
+
             for(ScheduleVO scheduleVO : scheduleVOList){
                 RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
                 vo.setId(scheduleVO.getId());
@@ -128,6 +134,10 @@ public class ScheduleAction {
                 vo.setCompanyId(scheduleVO.getCompanyId());
                 vo.setCompanyName(scheduleVO.getCompanyName());
                 vo.setCreateTime(scheduleVO.getsTime());
+                vo.setsTime(scheduleVO.getsTime());
+                vo.seteTime(scheduleVO.geteTime());
+                vo.setPlace(scheduleVO.getPlace());
+                vo.setDisTime(dateFormat1.format(scheduleVO.getsTime()) + " ~ " + dateFormat2.format(scheduleVO.geteTime()));
                 voList.add(vo);
             }
 
@@ -198,11 +208,14 @@ public class ScheduleAction {
                 vo.setCreateTime(schedule.getsTime());
                 vo.setSeq(schedule.getSeq());
                 vo.setStatus(schedule.getStatus());
+                vo.setsTime(schedule.getsTime());
+                vo.seteTime(schedule.geteTime());
+                vo.setPlace(schedule.getPlace());
                 voList.add(vo);
             }
 
             rs.setResult(voList);
-            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd";//设置日期格式
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mm:ss";//设置日期格式
 
             return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 

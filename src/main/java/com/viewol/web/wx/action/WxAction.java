@@ -1,6 +1,7 @@
 package com.viewol.web.wx.action;
 
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.*;
@@ -165,7 +166,7 @@ public class WxAction {
     @GET
     @Path(value = "/maLogin")
     @Produces("text/html;charset=UTF-8")
-    @ApiOperation(value = "小程序自动登录", notes = "", author = "更新于 2018-08-02")
+    @ApiOperation(value = "小程序自动登录,请使用maPhoneLogin接口替换此接口", notes = "", author = "更新于 2018-08-02")
     @ApiResponses(value = {
             @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
@@ -224,6 +225,103 @@ public class WxAction {
             fuser.setUuid(wxMaUserInfo.getUnionId());
 
             int result = fUserService.addFUser(fuser, openid, wxMaUserInfo.getUnionId(), FUserBind.TYPE_PROGRAM);
+
+            if (result > 0) {
+                LoginResponse.UserInfo userInfo = rs.new UserInfo();
+                userInfo.setUserId(result);
+                userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
+
+                String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
+                userInfo.setSessionId(sessionId);
+
+                rs.setStatus("0000");
+                rs.setMessage("授权成功");
+                rs.setResult(userInfo);
+            } else {
+                rs.setStatus("0004");
+                rs.setMessage("注册失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+        }
+
+        return rs.toJSONString();
+    }
+
+
+
+    /**
+     * 小程序授权手机号登录
+     *
+     * @param code 临时授权code
+     * @return
+     */
+    @GET
+    @Path(value = "/maPhoneLogin")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "小程序自动登录", notes = "", author = "更新于 2019-09-07")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String maPhoneLogin(@ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
+                               @ApiParam(value = "昵称", required = true) @QueryParam("nickName") String nickName,
+                               @ApiParam(value = "头像", required = true) @QueryParam("headPic") String headPic,
+                          @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传", required = true) @QueryParam("encryptedData") String encryptedData,
+                          @ApiParam(value = "加密算法的初始向量,不需要获取微信用户信息可以不传", required = true) @QueryParam("ivStr") String ivStr) {
+
+        LoginResponse rs = new LoginResponse();
+
+        try {
+            if(encryptedData == null || ivStr == null || "".equals(encryptedData) || "".equals(ivStr)){
+                return YouguuJsonHelper.returnJSON("0002", "encryptedData不能为空");
+            }
+
+            WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(code);
+            if (wxMaJscode2Session == null) {
+                return YouguuJsonHelper.returnJSON("0002", "授权失败");
+            }
+
+            String sessionKey = wxMaJscode2Session.getSessionKey();
+            String openid = wxMaJscode2Session.getOpenid();
+            String unionid = wxMaJscode2Session.getUnionid();
+
+            //已注册，返回用户信息
+            FUser fuser = fUserService.getUserByOpenId(openid,FUserBind.TYPE_PROGRAM);
+//            FUser fuser = fUserService.getUserByUuid(unionid);
+            if (fuser != null) {
+
+                LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
+                rs.setStatus("0000");
+                rs.setMessage("授权成功");
+                rs.setResult(userInfo);
+                return rs.toJSONString();
+            }
+
+
+            //先使用uuid查询一下
+            fuser = fUserService.getUserByUuid(unionid);
+            if(fuser!=null){
+                fUserService.addFuserBind(fuser.getUserId(),openid, unionid, FUserBind.TYPE_PROGRAM);
+                LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
+
+                rs.setStatus("0000");
+                rs.setMessage("授权成功");
+                rs.setResult(userInfo);
+                return rs.toJSONString();
+            }
+            //可能是新用户
+            WxMaPhoneNumberInfo phoneNumberInfo = wxService.getPhoneNumberInfo(sessionKey, encryptedData, ivStr);
+            //注册新用户
+            fuser = new FUser();
+            fuser.setUserName(nickName);
+            fuser.setHeadImgUrl(headPic);
+            fuser.setUuid(unionid);
+            fuser.setPhone(phoneNumberInfo.getPhoneNumber());
+
+            int result = fUserService.addFUser(fuser, openid, unionid, FUserBind.TYPE_PROGRAM);
 
             if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();

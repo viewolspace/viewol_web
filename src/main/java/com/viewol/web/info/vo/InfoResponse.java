@@ -5,7 +5,6 @@ import com.viewol.web.common.Response;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
 import java.util.List;
 
 @ApiModel
@@ -49,8 +48,11 @@ public class InfoResponse extends Response {
         @ApiModelProperty(value = "图片地址")
         private String picUrl;
 
-        @ApiModelProperty(value = "正文地址")
+        @ApiModelProperty(value = "正文地址，正文为空有效")
         private String contentUrl;
+
+        @ApiModelProperty(value = "正文内容")
+        private String content;
 
         public int getId() {
             return id;
@@ -98,6 +100,14 @@ public class InfoResponse extends Response {
 
         public void setContentUrl(String contentUrl) {
             this.contentUrl = contentUrl;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
         }
     }
 }

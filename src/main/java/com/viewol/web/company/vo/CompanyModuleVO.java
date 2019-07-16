@@ -27,7 +27,7 @@ public class CompanyModuleVO extends Response {
     private int isPraise;
 
     @ApiModelProperty(value = "展商秀，如果为空或者空字符串说明还没有展商秀")
-    private CompanyShow show;
+    private CompanyShow showInfo;
 
     @ApiModelProperty(value = "围观列表")
     private List<UserInteract>  see;
@@ -62,11 +62,11 @@ public class CompanyModuleVO extends Response {
         this.collection = collection;
     }
 
-    public CompanyShow getShow() {
-        return show;
+    public CompanyShow getShowInfo() {
+        return showInfo;
     }
 
-    public void setShow(CompanyShow show) {
-        this.show = show;
+    public void setShowInfo(CompanyShow showInfo) {
+        this.showInfo = showInfo;
     }
 }
