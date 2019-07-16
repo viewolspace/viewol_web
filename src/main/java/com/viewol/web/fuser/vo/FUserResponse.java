@@ -62,6 +62,9 @@ public class FUserResponse extends Response {
         @ApiModelProperty(value = "展商ID")
         private int companyId;
 
+        @ApiModelProperty(value = "用户头像")
+        private String headImgUrl;
+
         public int getUserId() {
             return userId;
         }
@@ -132,6 +135,14 @@ public class FUserResponse extends Response {
 
         public void setCompanyId(int companyId) {
             this.companyId = companyId;
+        }
+
+        public String getHeadImgUrl() {
+            return headImgUrl;
+        }
+
+        public void setHeadImgUrl(String headImgUrl) {
+            this.headImgUrl = headImgUrl;
         }
     }
 }

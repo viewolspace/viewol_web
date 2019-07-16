@@ -81,9 +81,10 @@ public class CompanyAtion {
     public String listCompany(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
                               @ApiParam(value = "搜索关键词 选填", defaultValue = "", required = false) @QueryParam("keyWord") String keyWord,
                               @ApiParam(value = "展商分类 选填", defaultValue = "", required = false) @QueryParam("categoryId") String categoryId,
+                              @ApiParam(value = "是否诚信企业 0 不是  1是", defaultValue = "0", required = true) @QueryParam("award") @DefaultValue("0") int award,
                               @ApiParam(value = "最小seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
                               @ApiParam(value = "数量 必填", defaultValue = "5", required = true) @QueryParam("num") int num) {
-        List<Company> list  = companyService.listCompany(expoId,keyWord, categoryId, lastSeq, num);
+        List<Company> list  = companyService.listCompany(expoId,keyWord, categoryId, award , lastSeq, num);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }
@@ -236,4 +237,63 @@ public class CompanyAtion {
 
         return rs.toJSONString();
     }
+
+
+    @POST
+    @Path(value = "/comment")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "展商评论", notes = "展商评论", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "评论成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "评论失败", response = Response.class)
+    })
+    public String updateUser(@ApiParam(value = "用户id", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "展商id", required = true) @FormParam("comId") int comId,
+                             @ApiParam(value = "评论内容", required = true) @FormParam("content") String content) {
+        try {
+            Response rs = new Response();
+
+            interactService.userComment(userId,UserInteract.CLASSIFY_COMPANY,comId,content);
+
+            rs.setStatus("0000");
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
+
+
+    @POST
+    @Path(value = "/praise")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "展商点赞", notes = "展商点赞", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "评论成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "评论失败", response = Response.class)
+    })
+    public String praise(@ApiParam(value = "用户id", required = true) @FormParam("userId") int userId,
+                         @ApiParam(value = "产品id", required = true) @FormParam("comId") int comId) {
+        try {
+            Response rs = new Response();
+
+            interactService.userInteract(userId, comId,UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_PRAISE);
+
+            rs.setStatus("0000");
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
 }

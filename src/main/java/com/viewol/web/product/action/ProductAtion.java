@@ -1,7 +1,10 @@
 package com.viewol.web.product.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.viewol.pojo.*;
+import com.viewol.pojo.Company;
+import com.viewol.pojo.Product;
+import com.viewol.pojo.UserCollection;
+import com.viewol.pojo.UserInteract;
 import com.viewol.service.*;
 import com.viewol.util.Base64Img;
 import com.viewol.web.common.Response;
@@ -86,9 +89,10 @@ public class ProductAtion {
                               @ApiParam(value = "展商的id ， 选填", defaultValue = "-1", required = false) @QueryParam("companyId") int companyId,
                               @ApiParam(value = "产品名称 ， 选填", defaultValue = "-1", required = false)         @QueryParam("name") String name,
                               @ApiParam(value = "分类id ， 选填", defaultValue = "-1", required = false)         @QueryParam("categoryId") String categoryId,
+                              @ApiParam(value = "是否创新产品 0 不是  1是", defaultValue = "0", required = true) @QueryParam("award") @DefaultValue("0") int award,
                               @ApiParam(value = "返回list最小的seq ， 第一页不需要传", defaultValue = "-1", required = false)         @QueryParam("lastSeq") long lastSeq,
                               @ApiParam(value = "数量 ， 必填", defaultValue = "5", required = true)         @QueryParam("num") int num) {
-        List<Product> list = productService.listProduct(expoId,companyId, name, categoryId, lastSeq, num);
+        List<Product> list = productService.listProduct(expoId,companyId, name, categoryId, award , lastSeq, num);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }
@@ -190,5 +194,63 @@ public class ProductAtion {
 
 
         return rs.toJSONString();
+    }
+
+
+    @POST
+    @Path(value = "/comment")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "产品评论", notes = "产品评论", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "评论成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "评论失败", response = Response.class)
+    })
+    public String updateUser(@ApiParam(value = "用户id", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "产品id", required = true) @FormParam("productId") int productId,
+                             @ApiParam(value = "评论内容", required = true) @FormParam("content") String content) {
+        try {
+            Response rs = new Response();
+
+            interactService.userComment(userId,UserInteract.CLASSIFY_PRODUCT,productId,content);
+
+            rs.setStatus("0000");
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
+
+
+    @POST
+    @Path(value = "/praise")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "产品点赞", notes = "产品点赞", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "评论成功", response = Response.class),
+            @ApiResponse(code = "0002", message = "评论失败", response = Response.class)
+    })
+    public String praise(@ApiParam(value = "用户id", required = true) @FormParam("userId") int userId,
+                             @ApiParam(value = "产品id", required = true) @FormParam("productId") int productId) {
+        try {
+            Response rs = new Response();
+
+            interactService.userInteract(userId, productId,UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_PRAISE);
+
+            rs.setStatus("0000");
+
+            return rs.toJSONString();
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
     }
 }

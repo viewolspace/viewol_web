@@ -95,7 +95,7 @@ public class FuserAction {
             vo.setAge(fUser.getAge());
             vo.setCreateTime(fUser.getcTime());
             vo.setCompanyId(fUser.getCompanyId());
-
+            vo.setHeadImgUrl(fUser.getHeadImgUrl());
             rs.setStatus("0000");
             rs.setMessage("查询成功");
             rs.setResult(vo);

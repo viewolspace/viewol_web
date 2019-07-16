@@ -466,4 +466,63 @@ public class ScheduleAction {
 
     }
 
+    /**
+     * 查询用户参加的展会
+     * @return
+     */
+    @GET
+    @Path(value = "/queryUserSchedule")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询用户参加的展会", notes = "查询用户参加的展会 , 全部查询", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功", response = RecommendScheduleResponse.class),
+            @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
+    })
+    public String queryUserSchedule(
+                               @ApiParam(value = "用户id", defaultValue = "", required = false) @QueryParam("userId") int userId
+                              ) {
+
+
+        List<Schedule> scheduleList = scheduleService.queryUserSchedule(userId,0,100);
+
+        try{
+            RecommendScheduleResponse rs = new RecommendScheduleResponse();
+            rs.setStatus("0000");
+            rs.setMessage("查询成功");
+            if(null == scheduleList || scheduleList.size() == 0){
+
+                return rs.toJSONString();
+            }
+
+            List<RecommendScheduleResponse.ScheduleVO> voList = new ArrayList<>();
+            for(Schedule schedule : scheduleList){
+                RecommendScheduleResponse.ScheduleVO vo = rs.new ScheduleVO();
+                vo.setId(schedule.getId());
+                vo.setTitle(schedule.getTitle());
+                vo.setCompanyId(schedule.getCompanyId());
+                vo.setCompanyName(schedule.getCompanyName());
+                vo.setCreateTime(schedule.getsTime());
+                vo.setSeq(schedule.getSeq());
+                vo.setStatus(schedule.getStatus());
+                vo.setsTime(schedule.getsTime());
+                vo.seteTime(schedule.geteTime());
+                vo.setPlace(schedule.getPlace());
+                voList.add(vo);
+            }
+
+            rs.setResult(voList);
+
+            JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mm";//设置日期格式
+
+            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Response rs = new Response();
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+            return rs.toJSONString();
+        }
+    }
+
 }
