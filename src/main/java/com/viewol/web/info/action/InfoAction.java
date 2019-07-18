@@ -79,4 +79,41 @@ public class InfoAction {
         return rs.toJSONString();
 
     }
+
+
+    @GET
+    @Path(value = "/getInfo")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询资讯列表", notes = "", author = "更新于 2018-08-20")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功" ,response = InfoResponse.class),
+
+    })
+    public String getInfo(@ApiParam(value = "infoId", defaultValue = "0", required = true) @QueryParam("infoId") int infoId
+                         ) {
+        InfoResponse rs = new InfoResponse();
+        try{
+            Info info =  infoService.getInfo(infoId);
+            SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+
+            Properties properties = PropertiesUtil.getProperties("properties/config.properties");
+            String prefix = properties.getProperty("info.visit.url");
+            InfoResponse.InfoVO infoVO = rs.new InfoVO();
+            infoVO.setId(info.getId());
+            infoVO.setTitle(info.getTitle());
+            infoVO.setSummary(info.getSummary());
+            infoVO.setPubTime(dft.format(info.getPubTime()));
+            infoVO.setPicUrl(info.getPicUrl());
+            infoVO.setContentUrl(prefix + File.separator + info.getContentUrl());
+            infoVO.setContent(info.getContent());
+
+        } catch (Exception e){
+            rs.setStatus("0001");
+            rs.setMessage("系统异常");
+        }
+
+
+        return rs.toJSONString();
+
+    }
 }
