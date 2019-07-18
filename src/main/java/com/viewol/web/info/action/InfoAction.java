@@ -1,5 +1,6 @@
 package com.viewol.web.info.action;
 
+import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.Info;
 import com.viewol.service.IInfoService;
 import com.viewol.web.info.vo.InfoResponse;
@@ -77,6 +78,52 @@ public class InfoAction {
 
 
         return rs.toJSONString();
+
+    }
+
+
+    @GET
+    @Path(value = "/getInfo")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询资讯内容 ， 注意返回的不是list 是单条，我懒得改说明了，哈哈", notes = "", author = "更新于 2018-08-20")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功" ,response = InfoResponse.class),
+
+    })
+    public String getInfo(@ApiParam(value = "infoId", defaultValue = "0", required = true) @QueryParam("infoId") int infoId
+                         ) {
+        JSONObject json = new JSONObject();
+        try{
+            Info info =  infoService.getInfo(infoId);
+            if(info!=null){
+                InfoResponse rs = new InfoResponse();
+                SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+                Properties properties = PropertiesUtil.getProperties("properties/config.properties");
+                String prefix = properties.getProperty("info.visit.url");
+                InfoResponse.InfoVO infoVO = rs.new InfoVO();
+                infoVO.setId(info.getId());
+                infoVO.setTitle(info.getTitle());
+                infoVO.setSummary(info.getSummary());
+                infoVO.setPubTime(dft.format(info.getPubTime()));
+                infoVO.setPicUrl(info.getPicUrl());
+                infoVO.setContentUrl(prefix + File.separator + info.getContentUrl());
+                infoVO.setContent(info.getContent());
+                json.put("status","0000");
+                json.put("result",infoVO);
+            }else{
+                json.put("status","0001");
+                json.put("message", "数据不存在");
+
+            }
+
+
+        } catch (Exception e){
+            json.put("status","0001");
+            json.put("message", "数据异常");
+        }
+
+
+        return json.toJSONString();
 
     }
 }
