@@ -282,7 +282,7 @@ public class CompanyAtion {
         try {
             Response rs = new Response();
 
-            interactService.userInteract(userId, comId,UserInteract.CLASSIFY_PRODUCT, UserInteract.TYPE_PRAISE);
+            interactService.userInteract(userId, comId,UserInteract.CLASSIFY_COMPANY, UserInteract.TYPE_PRAISE);
 
             rs.setStatus("0000");
 
