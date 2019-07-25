@@ -61,7 +61,10 @@ public class InfoAction {
                     infoVO.setSummary(info.getSummary());
                     infoVO.setPubTime(dft.format(info.getPubTime()));
                     infoVO.setPicUrl(info.getPicUrl());
-                    infoVO.setContentUrl(prefix + File.separator + info.getContentUrl());
+                    if(info.getContentUrl()!=null && !"".equals(info.getContentUrl().trim())){
+                        infoVO.setContentUrl(prefix + File.separator + info.getContentUrl());
+                    }
+
                     infoVO.setContent(info.getContent());
 
                     result.add(infoVO);
