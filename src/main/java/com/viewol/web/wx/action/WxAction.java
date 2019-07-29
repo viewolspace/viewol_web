@@ -171,7 +171,8 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String maLogin(@ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
+    public String maLogin(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                            @ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
                           @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传", required = true) @QueryParam("encryptedData") String encryptedData,
                           @ApiParam(value = "加密算法的初始向量,不需要获取微信用户信息可以不传", required = true) @QueryParam("ivStr") String ivStr) {
 
@@ -182,7 +183,7 @@ public class WxAction {
                 return YouguuJsonHelper.returnJSON("0002", "encryptedData不能为空");
             }
 
-            WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(code);
+            WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(maNum,code);
             if (wxMaJscode2Session == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
             }
@@ -192,7 +193,7 @@ public class WxAction {
             String unionid = wxMaJscode2Session.getUnionid();
 
             //已注册，返回用户信息
-            FUser fuser = fUserService.getUserByOpenId(openid,FUserBind.TYPE_PROGRAM);
+            FUser fuser = fUserService.getUserByOpenId(openid,maNum);
 //            FUser fuser = fUserService.getUserByUuid(unionid);
             if (fuser != null) {
 
@@ -204,11 +205,11 @@ public class WxAction {
             }
 
             //可能是新用户
-            WxMaUserInfo wxMaUserInfo = wxService.getUserInfo(sessionKey, encryptedData, ivStr);
+            WxMaUserInfo wxMaUserInfo = wxService.getUserInfo(maNum,sessionKey, encryptedData, ivStr);
             //先使用uuid查询一下
             fuser = fUserService.getUserByUuid(wxMaUserInfo.getUnionId());
             if(fuser!=null){
-                fUserService.addFuserBind(fuser.getUserId(),openid, wxMaUserInfo.getUnionId(), FUserBind.TYPE_PROGRAM);
+                fUserService.addFuserBind(fuser.getUserId(),openid, wxMaUserInfo.getUnionId(), maNum);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
 
                 rs.setStatus("0000");
@@ -224,7 +225,7 @@ public class WxAction {
             }
             fuser.setUuid(wxMaUserInfo.getUnionId());
 
-            int result = fUserService.addFUser(fuser, openid, wxMaUserInfo.getUnionId(), FUserBind.TYPE_PROGRAM);
+            int result = fUserService.addFUser(fuser, openid, wxMaUserInfo.getUnionId(), maNum);
 
             if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
@@ -266,7 +267,8 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String maPhoneLogin(@ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
+    public String maPhoneLogin(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                @ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
                                @ApiParam(value = "昵称", required = true) @QueryParam("nickName") String nickName,
                                @ApiParam(value = "头像", required = true) @QueryParam("headPic") String headPic,
                           @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传", required = true) @QueryParam("encryptedData") String encryptedData,
@@ -279,7 +281,7 @@ public class WxAction {
                 return YouguuJsonHelper.returnJSON("0002", "encryptedData不能为空");
             }
 
-            WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(code);
+            WxMaJscode2SessionResult wxMaJscode2Session = wxService.getSessionInfo(maNum,code);
             if (wxMaJscode2Session == null) {
                 return YouguuJsonHelper.returnJSON("0002", "授权失败");
             }
@@ -289,7 +291,7 @@ public class WxAction {
             String unionid = wxMaJscode2Session.getUnionid();
 
             //已注册，返回用户信息
-            FUser fuser = fUserService.getUserByOpenId(openid,FUserBind.TYPE_PROGRAM);
+            FUser fuser = fUserService.getUserByOpenId(openid,maNum);
 //            FUser fuser = fUserService.getUserByUuid(unionid);
             if (fuser != null) {
 
@@ -304,7 +306,7 @@ public class WxAction {
             //先使用uuid查询一下
             fuser = fUserService.getUserByUuid(unionid);
             if(fuser!=null){
-                fUserService.addFuserBind(fuser.getUserId(),openid, unionid, FUserBind.TYPE_PROGRAM);
+                fUserService.addFuserBind(fuser.getUserId(),openid, unionid, maNum);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
 
                 rs.setStatus("0000");
@@ -313,7 +315,7 @@ public class WxAction {
                 return rs.toJSONString();
             }
             //可能是新用户
-            WxMaPhoneNumberInfo phoneNumberInfo = wxService.getPhoneNumberInfo(sessionKey, encryptedData, ivStr);
+            WxMaPhoneNumberInfo phoneNumberInfo = wxService.getPhoneNumberInfo(maNum,sessionKey, encryptedData, ivStr);
             //注册新用户
             fuser = new FUser();
             fuser.setUserName(nickName);
@@ -321,7 +323,7 @@ public class WxAction {
             fuser.setUuid(unionid);
             fuser.setPhone(phoneNumberInfo.getPhoneNumber());
 
-            int result = fUserService.addFUser(fuser, openid, unionid, FUserBind.TYPE_PROGRAM);
+            int result = fUserService.addFUser(fuser, openid, unionid, maNum);
 
             if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
@@ -585,13 +587,14 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "查询成功", response = WxJsapiSignatureVO.class),
             @ApiResponse(code = "0001", message = "系统异常", response = WxJsapiSignatureVO.class)
     })
-    public String getPublicxaCode(@ApiParam(value = "page", required = true) @QueryParam("page") String page,
+    public String getPublicxaCode(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                  @ApiParam(value = "page", required = true) @QueryParam("page") String page,
                                   @ApiParam(value = "scene", required = true) @QueryParam("scene") String scene,
                                   @ApiParam(value = "width", required = true) @QueryParam("width") int width) {
         ErCodeResponse rs = new ErCodeResponse();
 
         try {
-            File file = wxService.createPublicxaCode(page,scene,width);
+            File file = wxService.createPublicxaCode(maNum,page,scene,width);
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){

@@ -167,7 +167,8 @@ public class ProductAtion {
             @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String getProductMaErCode(@ApiParam(value = "type，1-代表交换名片") @FormParam("type") int type,
+    public String getProductMaErCode(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                     @ApiParam(value = "type，1-代表交换名片") @FormParam("type") int type,
                                      @ApiParam(value = "产品ID", required = true) @FormParam("productId") int productId,
                                      @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
                                      @ApiParam(value = "二维码宽度，不填默认宽度430px") @FormParam("width") int width) {
@@ -175,7 +176,7 @@ public class ProductAtion {
         ErCodeResponse rs = new ErCodeResponse();
 
         try {
-            File file = wxService.createProductWxaCode(type, companyId, productId, "pages/product/info", width);
+            File file = wxService.createProductWxaCode(maNum,type, companyId, productId, "pages/product/info", width);
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){

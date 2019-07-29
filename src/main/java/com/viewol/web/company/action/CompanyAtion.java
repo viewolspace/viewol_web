@@ -167,7 +167,8 @@ public class CompanyAtion {
             @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String getCompanyMaErCode(@ApiParam(value = "type，1-代表交换名片", required = true) @FormParam("type") int type,
+    public String getCompanyMaErCode(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                     @ApiParam(value = "type，1-代表交换名片", required = true) @FormParam("type") int type,
                               @ApiParam(value = "业务员ID", required = true) @FormParam("bUserId") int bUserId,
                               @ApiParam(value = "展商ID", required = true) @FormParam("companyId") int companyId,
                               @ApiParam(value = "二维码宽度，不填默认宽度430px") @FormParam("width") int width) {
@@ -182,7 +183,7 @@ public class CompanyAtion {
                     bUserId = bUserList.get(0).getUserId();
                 }
             }
-            File file = wxService.createCompanyWxaCode(type, companyId, bUserId, "pages/company/index", width);
+            File file = wxService.createCompanyWxaCode(maNum,type, companyId, bUserId, "pages/company/index", width);
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){
@@ -212,12 +213,13 @@ public class CompanyAtion {
             @ApiResponse(code = "0002", message = "参数错误", response = Response.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String getProgramMaErCode(@ApiParam(value = "二维码宽度", required = true) @FormParam("width") int width) {
+    public String getProgramMaErCode(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                     @ApiParam(value = "二维码宽度", required = true) @FormParam("width") int width) {
 
         ErCodeResponse rs = new ErCodeResponse();
 
         try{
-            File file = wxService.createProgramWxaCode(width, "pages/index/index");
+            File file = wxService.createProgramWxaCode(maNum,width, "pages/index/index");
 
             String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
             if(file!=null){
