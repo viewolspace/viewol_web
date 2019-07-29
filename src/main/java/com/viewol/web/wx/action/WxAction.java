@@ -673,6 +673,9 @@ public class WxAction {
             CiecImpl ciec = new CiecImpl();
             JSONObject jsonObject = ciec.getUserFromNobile(phone);
             if(jsonObject!=null && needUpdate){
+                fuser.setUserName(jsonObject.getString("name"));
+                fuser.setCompany(jsonObject.getString("unitname"));
+                fuser.setEmail(jsonObject.getString("email"));
                 fuser.setUserJoin(1);
                 fUserService.updateUser(fuser);
             }
