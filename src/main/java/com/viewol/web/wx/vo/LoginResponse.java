@@ -5,9 +5,6 @@ import com.viewol.web.common.Response;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-import java.util.List;
-
 @ApiModel
 public class LoginResponse extends Response {
 
@@ -64,6 +61,9 @@ public class LoginResponse extends Response {
 
         @ApiModelProperty(value = "会话session，登录成功之后，调用其他接口，需要在请求头传入该session")
         private String sessionId;
+
+        @ApiModelProperty(value = "是否报名 0 没有报名 1已报名")
+        private int userJoin;
 
         public int getUserId() {
             return userId;
@@ -143,6 +143,14 @@ public class LoginResponse extends Response {
 
         public void setSessionId(String sessionId) {
             this.sessionId = sessionId;
+        }
+
+        public int getUserJoin() {
+            return userJoin;
+        }
+
+        public void setUserJoin(int userJoin) {
+            this.userJoin = userJoin;
         }
     }
 }

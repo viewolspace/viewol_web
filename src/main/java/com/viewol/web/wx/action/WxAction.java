@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.*;
 import com.viewol.service.*;
 import com.viewol.util.Base64Img;
+import com.viewol.util.CiecImpl;
 import com.viewol.web.common.Response;
 import com.viewol.web.company.vo.ErCodeResponse;
 import com.viewol.web.wx.util.WechatMessageUtil;
@@ -151,6 +152,7 @@ public class WxAction {
         userInfo.setAge(fuser.getAge());
         userInfo.setHeadImgUrl(fuser.getHeadImgUrl());
         userInfo.setCompanyId(fuser.getCompanyId());
+        userInfo.setUserJoin(fuser.getUserJoin());
 
         String sessionId = userSessionService.saveSession(fuser.getUserId(), UserSession.TYPE_MA);
         userInfo.setSessionId(sessionId);
@@ -292,9 +294,8 @@ public class WxAction {
 
             //已注册，返回用户信息
             FUser fuser = fUserService.getUserByOpenId(openid,maNum);
-//            FUser fuser = fUserService.getUserByUuid(unionid);
             if (fuser != null) {
-
+                getUserJoin(fuser,true);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
                 rs.setStatus("0000");
                 rs.setMessage("授权成功");
@@ -306,6 +307,7 @@ public class WxAction {
             //先使用uuid查询一下
             fuser = fUserService.getUserByUuid(unionid);
             if(fuser!=null){
+                getUserJoin(fuser,true);
                 fUserService.addFuserBind(fuser.getUserId(),openid, unionid, maNum);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
 
@@ -322,8 +324,9 @@ public class WxAction {
             fuser.setHeadImgUrl(headPic);
             fuser.setUuid(unionid);
             fuser.setPhone(phoneNumberInfo.getPhoneNumber());
-
+            getUserJoin(fuser,false);
             int result = fUserService.addFUser(fuser, openid, unionid, maNum);
+
 
             if (result > 0) {
                 LoginResponse.UserInfo userInfo = rs.new UserInfo();
@@ -656,5 +659,21 @@ public class WxAction {
             json.put("msg","错误");
         }
         return json.toJSONString();
+    }
+
+    private void getUserJoin(FUser fuser,boolean needUpdate){
+        String phone = fuser.getPhone();
+        if(fuser.getUserJoin()==1){
+            return;
+        }
+        if(phone==null || "".equals(phone)){
+            return;
+        }
+        CiecImpl ciec = new CiecImpl();
+        JSONObject jsonObject = ciec.getUserFromNobile(phone);
+        if(jsonObject!=null && needUpdate){
+            fuser.setUserJoin(1);
+            fUserService.updateUser(fuser);
+        }
     }
 }
