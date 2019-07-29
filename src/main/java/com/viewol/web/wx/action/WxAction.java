@@ -662,18 +662,23 @@ public class WxAction {
     }
 
     private void getUserJoin(FUser fuser,boolean needUpdate){
-        String phone = fuser.getPhone();
-        if(fuser.getUserJoin()==1){
-            return;
+        try{
+            String phone = fuser.getPhone();
+            if(fuser.getUserJoin()==1){
+                return;
+            }
+            if(phone==null || "".equals(phone)){
+                return;
+            }
+            CiecImpl ciec = new CiecImpl();
+            JSONObject jsonObject = ciec.getUserFromNobile(phone);
+            if(jsonObject!=null && needUpdate){
+                fuser.setUserJoin(1);
+                fUserService.updateUser(fuser);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        if(phone==null || "".equals(phone)){
-            return;
-        }
-        CiecImpl ciec = new CiecImpl();
-        JSONObject jsonObject = ciec.getUserFromNobile(phone);
-        if(jsonObject!=null && needUpdate){
-            fuser.setUserJoin(1);
-            fUserService.updateUser(fuser);
-        }
+
     }
 }
