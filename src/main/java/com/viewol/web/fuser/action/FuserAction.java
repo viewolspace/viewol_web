@@ -1,11 +1,13 @@
 package com.viewol.web.fuser.action;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.viewol.pojo.*;
 import com.viewol.pojo.query.UserCardQuery;
 import com.viewol.service.*;
 import com.viewol.sms.ISmsService;
 import com.viewol.sms.QingSmsServiceImpl;
+import com.viewol.util.CiecImpl;
 import com.viewol.util.EmailUtil;
 import com.viewol.web.common.Response;
 import com.viewol.web.fuser.vo.FUserResponse;
@@ -60,6 +62,31 @@ public class FuserAction {
     private IBUserService userService;
 
     private static Log log = LogFactory.getLog(FuserAction.class);
+
+    //获取用户信息
+    private void getUserJoin(FUser fuser){
+        try{
+            String phone = fuser.getPhone();
+            if(fuser.getUserJoin()==1){
+                return;
+            }
+            if(phone==null || "".equals(phone)){
+                return;
+            }
+            CiecImpl ciec = new CiecImpl();
+            JSONObject jsonObject = ciec.getUserFromNobile(phone);
+            if(jsonObject!=null){
+                fuser.setUserName(jsonObject.getString("name"));
+                fuser.setCompany(jsonObject.getString("unitname"));
+                fuser.setEmail(jsonObject.getString("email"));
+                fuser.setUserJoin(1);
+                fUserService.updateUser(fuser);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
     /**
      * 查询我的基本信息
      *
@@ -85,6 +112,8 @@ public class FuserAction {
                 return rs.toJSONString();
             }
 
+            getUserJoin(fUser);
+
             FUserResponse.FUserVO vo = rs.new FUserVO();
             vo.setUserId(fUser.getUserId());
             vo.setUserName(fUser.getUserName());
@@ -96,6 +125,7 @@ public class FuserAction {
             vo.setCreateTime(fUser.getcTime());
             vo.setCompanyId(fUser.getCompanyId());
             vo.setHeadImgUrl(fUser.getHeadImgUrl());
+            vo.setUserJoin(fUser.getUserJoin());
             rs.setStatus("0000");
             rs.setMessage("查询成功");
             rs.setResult(vo);

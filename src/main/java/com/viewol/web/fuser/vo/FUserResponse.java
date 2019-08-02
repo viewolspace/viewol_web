@@ -65,6 +65,9 @@ public class FUserResponse extends Response {
         @ApiModelProperty(value = "用户头像")
         private String headImgUrl;
 
+        @ApiModelProperty(value = "是否报名 0 没有报名 1已报名")
+        private int userJoin;
+
         public int getUserId() {
             return userId;
         }
@@ -143,6 +146,14 @@ public class FUserResponse extends Response {
 
         public void setHeadImgUrl(String headImgUrl) {
             this.headImgUrl = headImgUrl;
+        }
+
+        public int getUserJoin() {
+            return userJoin;
+        }
+
+        public void setUserJoin(int userJoin) {
+            this.userJoin = userJoin;
         }
     }
 }
