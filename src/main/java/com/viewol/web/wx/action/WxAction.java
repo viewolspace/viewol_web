@@ -173,7 +173,7 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String maLogin(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+    public String maLogin(@ApiParam(value = "哪个小程序 1 观展通  3 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
                             @ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
                           @ApiParam(value = "消息密文,不需要获取微信用户信息可以不传", required = true) @QueryParam("encryptedData") String encryptedData,
                           @ApiParam(value = "加密算法的初始向量,不需要获取微信用户信息可以不传", required = true) @QueryParam("ivStr") String ivStr) {
@@ -269,7 +269,7 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "请求成功", response = LoginResponse.class),
             @ApiResponse(code = "0001", message = "系统异常", response = Response.class)
     })
-    public String maPhoneLogin(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+    public String maPhoneLogin(@ApiParam(value = "哪个小程序 1 观展通  3 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
                                 @ApiParam(value = "授权code", required = true) @QueryParam("code") String code,
                                @ApiParam(value = "昵称", required = true) @QueryParam("nickName") String nickName,
                                @ApiParam(value = "头像", required = true) @QueryParam("headPic") String headPic,
@@ -590,7 +590,7 @@ public class WxAction {
             @ApiResponse(code = "0000", message = "查询成功", response = WxJsapiSignatureVO.class),
             @ApiResponse(code = "0001", message = "系统异常", response = WxJsapiSignatureVO.class)
     })
-    public String getPublicxaCode(@ApiParam(value = "哪个小程序 1 观展通  2 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+    public String getPublicxaCode(@ApiParam(value = "哪个小程序 1 观展通  3 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
                                   @ApiParam(value = "page", required = true) @QueryParam("page") String page,
                                   @ApiParam(value = "scene", required = true) @QueryParam("scene") String scene,
                                   @ApiParam(value = "width", required = true) @QueryParam("width") int width) {
