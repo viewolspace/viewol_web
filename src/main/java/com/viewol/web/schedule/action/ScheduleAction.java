@@ -182,12 +182,13 @@ public class ScheduleAction {
                                @ApiParam(value = "关键词（可匹配主题和展商名称）") @QueryParam("keyword") String keyword,
                                @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
                                @ApiParam(value = "公司id （业务员查询公司活动的时候使用）", defaultValue = "0") @QueryParam("companyId") int companyId,
+                               @ApiParam(value = "bbs 1 只查询论坛 0 查询全部", defaultValue = "0") @QueryParam("bbs") @DefaultValue("0")int bbs,
                                @ApiParam(value = "每次返回多少条记录", required = true) @QueryParam("num") int num) {
 
         if(companyId<0){
             companyId = 0;
         }
-        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK,endTime,place);
+        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,bbs,time, date, type, keyword, lastSeq, num, companyId, Schedule.STATUS_OK,endTime,place);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
@@ -249,7 +250,7 @@ public class ScheduleAction {
                                  @ApiParam(value = "最后一条记录的seq 第一页不需要传", defaultValue = "0", required = true) @QueryParam("lastSeq") long lastSeq,
                                @ApiParam(value = "每次返回多少条记录", defaultValue = "20", required = true) @QueryParam("num") int num) {
 
-        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2,null,null);
+        List<Schedule> scheduleList = scheduleService.listSchedule(expoId,0,null, null, Schedule.TYPE_COM, null, lastSeq, num, companyId, -2,null,null);
 
         try{
             RecommendScheduleResponse rs = new RecommendScheduleResponse();
