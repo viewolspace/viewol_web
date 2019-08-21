@@ -292,9 +292,18 @@ public class WxAction {
             String openid = wxMaJscode2Session.getOpenid();
             String unionid = wxMaJscode2Session.getUnionid();
 
+            //可能是新用户
+            WxMaPhoneNumberInfo phoneNumberInfo = wxService.getPhoneNumberInfo(maNum,sessionKey, encryptedData, ivStr);
+
             //已注册，返回用户信息
             FUser fuser = fUserService.getUserByOpenId(openid,maNum);
             if (fuser != null) {
+
+                if(fuser.getPhone() == null || "".equals(fuser.getPhone())){
+                    fuser.setPhone(phoneNumberInfo.getPhoneNumber());
+                    fUserService.updateUser(fuser);
+                }
+
                 getUserJoin(fuser,true);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
                 rs.setStatus("0000");
@@ -307,6 +316,10 @@ public class WxAction {
             //先使用uuid查询一下
             fuser = fUserService.getUserByUuid(unionid);
             if(fuser!=null){
+                if(fuser.getPhone() == null || "".equals(fuser.getPhone())){
+                    fuser.setPhone(phoneNumberInfo.getPhoneNumber());
+                    fUserService.updateUser(fuser);
+                }
                 getUserJoin(fuser,true);
                 fUserService.addFuserBind(fuser.getUserId(),openid, unionid, maNum);
                 LoginResponse.UserInfo userInfo = this.getUserInfo(fuser,rs);
@@ -316,8 +329,7 @@ public class WxAction {
                 rs.setResult(userInfo);
                 return rs.toJSONString();
             }
-            //可能是新用户
-            WxMaPhoneNumberInfo phoneNumberInfo = wxService.getPhoneNumberInfo(maNum,sessionKey, encryptedData, ivStr);
+
             //注册新用户
             fuser = new FUser();
             fuser.setUserName(nickName);
