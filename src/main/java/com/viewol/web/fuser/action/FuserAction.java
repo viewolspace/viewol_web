@@ -79,6 +79,7 @@ public class FuserAction {
                 fuser.setUserName(jsonObject.getString("name"));
                 fuser.setCompany(jsonObject.getString("unitname"));
                 fuser.setEmail(jsonObject.getString("email"));
+                fuser.setPosition(jsonObject.getString("duty"));
                 fuser.setUserJoin(1);
                 fUserService.updateUser(fuser);
             }
