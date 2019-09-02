@@ -298,4 +298,43 @@ public class CompanyAtion {
         }
     }
 
+
+
+    /**
+     * 查询展商基本信息
+     * @param id
+     * @return
+     */
+    @GET
+    @Path(value = "/getCompanyAndQr")
+    @Produces("text/html;charset=UTF-8")
+    @ApiOperation(value = "查询展商基本信息以及1二维码", notes = "展商主页包含两个Tab页，第一Tab显示展商基本信息。", author = "更新于 2018-07-16")
+    @ApiResponses(value = {
+            @ApiResponse(code = "0000", message = "请求成功", response = CompanyModuleVO.class),
+
+    })
+    public String getCompanyAndQr(@ApiParam(value = "哪个小程序 1 观展通  3 观展讯", required = true) @QueryParam("maNum") @DefaultValue("1") int maNum,
+                                  @ApiParam(value = "展商的id", defaultValue = "", required = true) @QueryParam("id") int id,
+                             @ApiParam(value = "用户id 没有传0", defaultValue = "0", required = false) @QueryParam("userId") int userId,
+                                  @ApiParam(value = "宽度", defaultValue = "100", required = false) @QueryParam("width") @DefaultValue("100") int width) {
+
+        String categoryId = null;
+
+        Company company = companyService.getCompany(id);
+
+
+        JSONObject json = new JSONObject();
+        json.put("code","0000");
+        json.put("message","ok");
+        json.put("result",company);
+
+
+        File file = wxService.createPublicxaCode(3, "pages/index/page", "1:" + company.getId(), width);
+        String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
+        json.put("qr",base64Str);
+
+
+        return json.toJSONString();
+    }
+
 }
