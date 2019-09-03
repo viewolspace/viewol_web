@@ -329,7 +329,7 @@ public class CompanyAtion {
         json.put("result",company);
 
 
-        File file = wxService.createPublicxaCode(3, "pages/index/page", "1:" + company.getId(), width);
+        File file = wxService.createPublicxaCode(3, "pages/index/page", "11:" + company.getId(), width);
         String base64Str = Base64Img.GetImageStrFromPath(file.getPath());
         json.put("qr",base64Str);
 
