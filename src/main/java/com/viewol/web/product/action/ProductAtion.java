@@ -218,7 +218,12 @@ public class ProductAtion {
         try {
             Response rs = new Response();
 
-            interactService.userComment(userId,UserInteract.CLASSIFY_PRODUCT,productId,content);
+            Product product = productService.getProduct(productId);
+            if(product!=null){
+                interactService.userComment(product.getCompanyId(),userId,UserInteract.CLASSIFY_PRODUCT,productId,content);
+            }
+
+
 
             rs.setStatus("0000");
 

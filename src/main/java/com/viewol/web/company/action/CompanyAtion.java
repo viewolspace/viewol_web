@@ -256,7 +256,7 @@ public class CompanyAtion {
         try {
             Response rs = new Response();
 
-            interactService.userComment(userId,UserInteract.CLASSIFY_COMPANY,comId,content);
+            interactService.userComment(comId,userId,UserInteract.CLASSIFY_COMPANY,comId,content);
 
             rs.setStatus("0000");
 
