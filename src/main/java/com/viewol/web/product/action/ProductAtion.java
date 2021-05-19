@@ -85,7 +85,8 @@ public class ProductAtion {
             @ApiResponse(code = "0000", message = "请求成功"  ,response = ProductModuleVO.class)
 
     })
-    public String listProduct(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+    public String listProduct(@ApiParam(value = "所属大厅 选填(输入 W1  W2 这样的)", defaultValue = "", required = false)         @QueryParam("hall") String hall,
+                                @ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
                               @ApiParam(value = "展商的id ， 选填", defaultValue = "-1", required = false) @QueryParam("companyId") int companyId,
                               @ApiParam(value = "产品名称 ， 选填", defaultValue = "-1", required = false)         @QueryParam("name") String name,
                               @ApiParam(value = "关键词 和 产品名称一样 优先使用产品名称 ， 选填", defaultValue = "-1", required = false)         @QueryParam("keyWord") String keyWord,
@@ -97,7 +98,7 @@ public class ProductAtion {
             name = keyWord;
         }
 
-        List<Product> list = productService.listProduct(expoId,companyId, name, categoryId, award , lastSeq, num);
+        List<Product> list = productService.listProduct(hall,expoId,companyId, name, categoryId, award , lastSeq, num);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }

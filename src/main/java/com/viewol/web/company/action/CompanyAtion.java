@@ -78,13 +78,14 @@ public class CompanyAtion {
             @ApiResponse(code = "0000", message = "请求成功", response = CompanyListVO.class)
 
     })
-    public String listCompany(@ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
+    public String listCompany(@ApiParam(value = "所属大厅 选填(输入 W1  W2 这样的)", defaultValue = "", required = false)         @QueryParam("hall") String hall,
+                              @ApiParam(value = "展会编号", defaultValue = "1", required = true) @QueryParam("expoId" )  @DefaultValue("1") int expoId,
                               @ApiParam(value = "搜索关键词 选填", defaultValue = "", required = false) @QueryParam("keyWord") String keyWord,
                               @ApiParam(value = "展商分类 选填", defaultValue = "", required = false) @QueryParam("categoryId") String categoryId,
                               @ApiParam(value = "是否诚信企业 0 不是  1是", defaultValue = "0", required = true) @QueryParam("award") @DefaultValue("0") int award,
                               @ApiParam(value = "最小seq 第一页不需要传", defaultValue = "", required = false) @QueryParam("lastSeq") long lastSeq,
                               @ApiParam(value = "数量 必填", defaultValue = "5", required = true) @QueryParam("num") int num) {
-        List<Company> list  = companyService.listCompany(expoId,keyWord, categoryId, award , lastSeq, num);
+        List<Company> list  = companyService.listCompany(hall,expoId,keyWord, categoryId, award , lastSeq, num);
 
         return YouguuJsonHelper.returnJSON("0000", "ok",list);
     }

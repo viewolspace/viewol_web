@@ -173,11 +173,14 @@ public class BuserAction {
             if(phone==null || "".equals(phone)){
                 return YouguuJsonHelper.returnJSON("0001", "请输入手机号");
             }
-            BbsJoin bbsJoin = bbsJoinService.getBbsJoin(phone,bbsId);
-            if(bbsJoin==null){
+//            BbsJoin bbsJoin = bbsJoinService.getBbsJoin(phone,bbsId);
+//            if(bbsJoin==null){
+//                return YouguuJsonHelper.returnJSON("0013", "还未报名，请先报名");
+//            }
+            int result  = bbsJoinService.signIn(phone,bbsId);
+            if(result==-99){
                 return YouguuJsonHelper.returnJSON("0013", "还未报名，请先报名");
             }
-            int result  = bbsJoinService.signIn(phone,bbsJoin.getId());
             if(result>0){
                 return YouguuJsonHelper.returnJSON("0000", "签到成功");
             }else{
