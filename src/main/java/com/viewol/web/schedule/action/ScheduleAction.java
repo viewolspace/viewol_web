@@ -1,5 +1,6 @@
 package com.viewol.web.schedule.action;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.viewol.pojo.Schedule;
@@ -11,7 +12,6 @@ import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.web.schedule.vo.ScheduleResponse;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -329,7 +329,7 @@ public class ScheduleAction {
             vo.setPlace(scheduleVO.getPlace());
             vo.setVtype(scheduleVO.getvType());
             vo.setSeq(scheduleVO.getSeq());
-            vo.setContentView(scheduleVO.getContentView());
+            vo.setContentView(JSON.parse(scheduleVO.getContentView()).toString());
             vo.setRecommendSTime(scheduleVO.getRecommendSTime());
             vo.setRecommendETime(scheduleVO.getRecommendETime());
             vo.setApplyStatus(scheduleVO.getApplyStatus());
@@ -343,7 +343,7 @@ public class ScheduleAction {
 
             JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mm";//设置日期格式
 
-            return StringEscapeUtils.unescapeJava(rs.toJSONString());
+            return rs.toJSONString();
 
 //            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 
