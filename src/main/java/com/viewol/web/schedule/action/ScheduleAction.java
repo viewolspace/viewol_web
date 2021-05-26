@@ -11,6 +11,7 @@ import com.viewol.web.schedule.vo.RecommendScheduleResponse;
 import com.viewol.web.schedule.vo.ScheduleResponse;
 import com.youguu.core.util.json.YouguuJsonHelper;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -342,7 +343,9 @@ public class ScheduleAction {
 
             JSONObject.DEFFAULT_DATE_FORMAT="yyyy.MM.dd HH:mm";//设置日期格式
 
-            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
+            return StringEscapeUtils.unescapeJava(rs.toJSONString());
+
+//            return JSONObject.toJSONString(rs, SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteDateUseDateFormat);
 
 
         } catch (Exception e){
